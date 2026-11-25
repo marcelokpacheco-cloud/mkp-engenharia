@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MKP Engenharia · Automação residencial com Alexa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070d1c; --panel:#0f1a33; --panel2:#14233f; --line:#223760; --text:#e8eefc; --muted:#95a7c9;
+  --yellow:#ffc928; --cyan:#3ee0ff; --warn:#ff8a70;
+  --display:"Space Grotesk","Segoe UI",Arial,sans-serif; --body:"Manrope","Segoe UI",Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);color:var(--text);line-height:1.65;font-size:17px;background-color:var(--bg);
+  background-image:linear-gradient(rgba(62,224,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(62,224,255,.05) 1px,transparent 1px);
+  background-size:44px 44px}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+h1,h2,h3{font-family:var(--display);line-height:1.1;letter-spacing:-.015em}
+h1{font-size:clamp(2.1rem,5.2vw,3.6rem);font-weight:700}
+h2{font-size:clamp(1.6rem,3.4vw,2.2rem);font-weight:700;margin-bottom:10px}
+h3{font-size:1.1rem;font-weight:500;margin-bottom:6px}
+.sub{color:var(--muted);max-width:38em}
+.btn{display:inline-block;padding:13px 26px;border-radius:999px;font-weight:700;text-decoration:none;border:2px solid var(--yellow);font-size:1rem;cursor:pointer;font-family:inherit}
+.btn.primary{background:var(--yellow);color:#14213a}
+.btn.primary:hover{box-shadow:0 0 22px rgba(255,201,40,.5)}
+.btn.ghost{background:transparent;color:var(--text);border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--cyan)}
+
+.top{padding:16px 0}
+.top .wrap{display:flex;justify-content:space-between;align-items:center;gap:14px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:1.2rem}
+.logo{width:40px;height:40px;border-radius:12px;background:var(--yellow);color:#14213a;display:grid;place-items:center;font-size:1.3rem}
+.brand small{display:block;font-family:var(--body);font-weight:600;font-size:.78rem;color:var(--muted);line-height:1}
+
+.hero{padding:30px 0 60px}
+.hero .wrap{display:grid;grid-template-columns:1fr 1.05fr;gap:38px;align-items:center}
+.tag{display:inline-block;border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:6px 16px;font-weight:600;font-size:.92rem;margin-bottom:16px;color:var(--cyan)}
+.lead{margin:18px 0 26px;font-size:1.12rem;color:var(--muted);max-width:30em}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap}
+h1 em{font-style:normal;color:var(--yellow)}
+
+/* demo da casa */
+.demo{background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:0 0 40px rgba(62,224,255,.1)}
+.voice{display:flex;align-items:center;gap:14px;min-height:64px;background:var(--bg);border-radius:16px;padding:12px 16px;border:1px solid var(--line)}
+.ring{width:34px;height:34px;border-radius:50%;border:4px solid var(--cyan);flex:none;box-shadow:0 0 14px var(--cyan);opacity:.5}
+.ring.on{opacity:1;animation:pulse 1.1s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.18);box-shadow:0 0 26px var(--cyan)}}
+#say{font-weight:600}
+#say small{display:block;color:var(--muted);font-weight:400;font-size:.85rem}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+.tile{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:14px;transition:.3s}
+.tile b{display:block;font-family:var(--display);font-weight:500}
+.tile span{font-size:.88rem;color:var(--muted)}
+.tile i{font-style:normal;font-size:1.7rem;display:block;filter:grayscale(1) opacity(.5);transition:.3s}
+.tile.on{border-color:var(--yellow);background:#1c2a47;box-shadow:0 0 22px rgba(255,201,40,.25)}
+.tile.on i{filter:none}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:transparent;color:var(--text);border:1px solid var(--line);border-radius:999px;padding:8px 14px;font:600 .88rem var(--body);cursor:pointer}
+.chip:hover{border-color:var(--cyan);color:var(--cyan)}
+.hint{font-size:.82rem;color:var(--muted);margin-top:10px}
+
+section{padding:54px 0}
+.videos{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:24px}
+.vid{background:var(--panel);border:1px solid var(--line);border-radius:20px;overflow:hidden}
+.frame{aspect-ratio:16/9;background:linear-gradient(135deg,#14233f,#0b1630);display:grid;place-items:center;text-align:center;color:var(--muted);font-size:.9rem;padding:12px}
+.frame iframe{width:100%;height:100%;border:0}
+.frame .play{width:54px;height:54px;border-radius:50%;border:2px solid var(--cyan);display:grid;place-items:center;color:var(--cyan);font-size:1.3rem;margin:0 auto 8px}
+.vid div.t{padding:14px 16px}
+.vid p{color:var(--muted);font-size:.92rem}
+
+.kitgrid{display:grid;grid-template-columns:1fr 1fr;gap:34px;align-items:start;margin-top:10px}
+.kit{background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:24px}
+.kit label{display:flex;align-items:center;gap:12px;padding:10px 14px;margin-bottom:8px;border-radius:14px;background:var(--panel2);cursor:pointer;font-size:.96rem;border:1px solid transparent}
+.kit label:has(input:checked){border-color:var(--cyan)}
+.kit .n{flex:1}
+.kit .p{color:var(--muted);font-weight:700;white-space:nowrap}
+.kit input{width:20px;height:20px;accent-color:var(--cyan);flex:none}
+.meter{margin-top:14px;padding:16px;border-radius:16px;background:var(--bg);border:1px solid var(--line)}
+.meter .row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.total{font-family:var(--display);font-size:2rem;font-weight:700}
+.msg{font-size:.92rem;color:var(--yellow);font-weight:700}
+.msg.over{color:var(--warn)}
+.bar{height:12px;background:#223760;border-radius:999px;margin-top:10px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--yellow));border-radius:999px;transition:width .3s}
+.bar i.over{background:var(--warn)}
+.kit .btn{width:100%;text-align:center;margin-top:14px}
+.note{font-size:.8rem;color:var(--muted);margin-top:10px;text-align:center}
+
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:22px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:24px}
+.panel ul{list-style:none;padding:0;margin-top:8px}
+.panel li{padding:6px 0 6px 28px;position:relative}
+.panel li::before{content:"";position:absolute;left:4px;top:15px;width:10px;height:10px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+.steps{list-style:none;padding:0;margin-top:24px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:s}
+.steps li{counter-increment:s;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px}
+.steps li::before{content:counter(s);display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--yellow);color:#14213a;font-weight:700;margin-bottom:10px}
+.steps p{color:var(--muted);font-size:.94rem}
+details{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:10px;max-width:760px}
+summary{font-weight:700;cursor:pointer}
+details p{margin-top:8px;color:var(--muted)}
+.final{border:1px solid var(--yellow);background:linear-gradient(135deg,#1a2540,#0f1a33);border-radius:28px;padding:46px 22px;text-align:center;margin:10px 0 36px;box-shadow:0 0 40px rgba(255,201,40,.12)}
+.final p{margin:8px auto 22px;max-width:30em;color:var(--muted)}
+footer{padding:0 0 90px;font-size:.84rem;color:var(--muted);text-align:center}
+.float{position:fixed;right:16px;bottom:16px;z-index:5;background:#25a35a;color:#fff;border-radius:999px;padding:12px 20px;font-weight:700;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.4)}
+
+@media (max-width:860px){
+  .hero .wrap,.kitgrid,.duo{grid-template-columns:1fr}
+  .videos,.steps{grid-template-columns:1fr 1fr}
+  section{padding:40px 0}
+}
+@media (max-width:540px){.videos,.steps{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.ring.on{animation:none}.bar i,.tile,.tile i{transition:none}html{scroll-behavior:auto}}
+
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
+.gallery figure{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.gallery img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
+.gallery figcaption{padding:10px 14px;font-size:.9rem;color:var(--muted)}
+#admin-link{color:var(--muted);font-size:.8rem}
+dialog{background:var(--panel);color:var(--text);border:1px solid var(--cyan);border-radius:22px;padding:24px;width:min(420px,94vw);box-shadow:0 0 40px rgba(62,224,255,.2)}
+dialog::backdrop{background:rgba(3,7,16,.75)}
+#dlg-admin{width:min(800px,95vw);max-height:90vh;overflow:auto}
+dialog input:not([type=checkbox]):not([type=file]){width:100%;min-width:0;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit;margin:4px 0}
+dialog input[type=file]{margin-top:10px;color:var(--muted)}
+.dh{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.arow{display:grid;grid-template-columns:56px 1fr 96px auto auto;gap:8px;align-items:center}
+.arow.v{grid-template-columns:1.2fr 1fr 1.2fr auto}
+.arow.f{grid-template-columns:70px 1fr auto}
+.arow img{width:70px;height:52px;object-fit:cover;border-radius:8px}
+.chk{font-size:.85rem;color:var(--muted);white-space:nowrap}
+.mini{background:transparent;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer;font:600 .9rem var(--body)}
+.mini:hover{border-color:var(--cyan)}
+.amsg{color:var(--yellow);font-weight:700;min-height:1.4em;margin-top:8px}
+@media (max-width:860px){.gallery{grid-template-columns:1fr 1fr}.arow,.arow.v{grid-template-columns:1fr 1fr}.arow.f{grid-template-columns:70px 1fr auto}}
+@media (max-width:540px){.gallery{grid-template-columns:1fr}}
+
+.tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.tabs .mini.on{border-color:var(--cyan);color:var(--cyan)}
+.tf{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:10px}
+.tf label{display:block;font-size:.8rem;color:var(--muted)}
+dialog select{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit;margin:4px 0}
+.res{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:12px;line-height:1.7}
+.res b{color:var(--yellow)}
+.res small{color:var(--muted)}
+.arow.l{grid-template-columns:1.6fr 1fr .7fr auto}
+#pane-tools details{background:var(--panel2);border-radius:14px;padding:14px 16px;margin-bottom:10px;max-width:none}
+
+.cta2{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.mini:disabled{opacity:.5;cursor:default}
+#pane-auto details{background:var(--panel2);border-radius:14px;padding:14px 16px;margin-bottom:10px;max-width:none}
+
+.chkrow{display:grid;grid-template-columns:1fr 130px;gap:8px;align-items:center;padding:4px 0;border-top:1px solid var(--line)}
+.arow.q{grid-template-columns:1.8fr .5fr .6fr 1fr auto}
+pre.res{white-space:pre-wrap;word-break:break-word;font:inherit;font-size:.92rem}
+#pane-visit details{background:var(--panel2);border-radius:14px;padding:14px 16px;margin-bottom:10px;max-width:none}
+@media (max-width:540px){.chkrow{grid-template-columns:1fr}}
+
+.warn{border:1px solid var(--warn);border-radius:12px;padding:10px 12px;font-size:.88rem;margin:0 0 12px;line-height:1.5}
+.tagcard{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:10px;margin-bottom:8px}
+.tg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px;align-items:center}
+.lv{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-top:12px}
+.lc{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:12px}
+.lc small{display:block;color:var(--muted);font-size:.8rem}
+.lc.ok{border-color:#1f9d6b}
+.lc.al{border-color:var(--warn);box-shadow:0 0 14px rgba(255,138,112,.3)}
+.lc.nd{opacity:.65}
+.lc b.v{display:block;font-family:var(--display);font-size:1.5rem;color:var(--text)}
+.lc svg{display:block;width:100%;height:30px;margin:4px 0}
+.lc polyline{fill:none;stroke:var(--cyan);stroke-width:1.5;vector-effect:non-scaling-stroke}
+.lg{max-height:190px;overflow:auto;font-size:.85rem}
+#pane-scada details{background:var(--panel2);border-radius:14px;padding:14px 16px;margin-bottom:10px;max-width:none}
+
+.prow{display:grid;grid-template-columns:70px 1fr 44px 96px auto auto;gap:8px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.prow .pc{color:var(--muted);font-size:.85rem;overflow-wrap:anywhere}
+.prow .pn small{display:block;color:var(--muted);font-size:.8rem}
+.prow .pp{font-weight:700;text-align:right}
+#pane-prod details,#pane-quote details{background:var(--panel2);border-radius:14px;padding:14px 16px;margin-bottom:10px;max-width:none}
+@media (max-width:700px){.prow{grid-template-columns:1fr 90px auto auto}.prow .pc,.prow .pu{display:none}.arow.q{grid-template-columns:1fr 1fr}}
+
+/* ===== Pachequinho · assistente IA ===== */
+/* Bubble flutuante */
+#asst-bubble-wrap {
+  position: fixed;
+  bottom: 80px; right: 16px;
+  width: 62px; height: 62px;
+  z-index: 9000;
+  pointer-events: none;
+}
+#asst-bubble {
+  position: absolute;
+  inset: 0;
+  width: 62px; height: 62px;
+  background: transparent;
+  border-radius: 50%;
+  box-shadow: 0 4px 20px rgba(0,0,0,.30);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  padding: 0;
+  transition: transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .2s;
+  border: none;
+  pointer-events: auto;
+  animation: asstFloat 3.6s ease-in-out infinite;
+  will-change: transform;
+}
+#asst-bubble:hover { transform: scale(1.12) rotate(-4deg); box-shadow: 0 6px 28px rgba(62,224,255,.55); animation-play-state: paused; }
+#asst-bubble:active { transform: scale(.94) rotate(2deg); }
+#asst-bubble.asst-wiggle { animation: asstWiggle .75s ease-in-out; }
+#asst-bubble.asst-open-pop { animation: asstPop .35s ease-out; }
+#asst-bubble .asst-badge {
+  position: absolute; top: -4px; right: -4px;
+  width: 18px; height: 18px;
+  background: #ffc928; border-radius: 50%;
+  border: 2px solid #070d1c;
+  font-size: 10px; font-weight: 700; color: #14213a;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 2;
+}
+.asst-ring {
+  position: absolute; inset: -6px;
+  border-radius: 50%;
+  border: 2px solid #ffc928;
+  opacity: 0;
+  pointer-events: none;
+}
+#asst-bubble-wrap.notify .asst-ring { animation: asstRingPulse 1.7s ease-out infinite; }
+.asst-tooltip {
+  position: absolute;
+  bottom: 8px; right: 76px;
+  max-width: 210px;
+  width: max-content;
+  background: #0f1a33;
+  color: #e8eefc;
+  border: 1px solid #223760;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.45;
+  padding: 10px 14px;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.20);
+  pointer-events: none;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(8px) scale(.92);
+  transform-origin: bottom right;
+  transition: opacity .25s ease, transform .25s cubic-bezier(.34,1.56,.64,1);
+}
+.asst-tooltip.show { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+.asst-tooltip::after {
+  content: '';
+  position: absolute; right: -6px; bottom: 16px;
+  width: 12px; height: 12px;
+  background: #0f1a33;
+  border-right: 1px solid #223760; border-top: 1px solid #223760;
+  transform: rotate(45deg);
+}
+@keyframes asstFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-6px) rotate(-2deg); }
+}
+@keyframes asstWiggle {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  15% { transform: rotate(-14deg) translateY(-3px); }
+  30% { transform: rotate(11deg) translateY(-9px); }
+  45% { transform: rotate(-9deg) translateY(-3px); }
+  60% { transform: rotate(7deg) translateY(-6px); }
+  75% { transform: rotate(-4deg) translateY(0); }
+}
+@keyframes asstPop {
+  0% { transform: scale(1); }
+  40% { transform: scale(.85) rotate(-8deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+@keyframes asstRingPulse {
+  0% { transform: scale(.92); opacity: .75; }
+  100% { transform: scale(1.55); opacity: 0; }
+}
+/* Reação — emoji que "pipoca" no canto do bubble por alguns segundos,
+   usado quando o Pachequinho reage a algo que o usuário acabou de fazer */
+.asst-reaction {
+  position: absolute; top: -10px; left: -8px;
+  font-size: 20px; line-height: 1;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,.25));
+  opacity: 0; transform: scale(.4) rotate(-15deg);
+  transition: opacity .2s ease, transform .2s cubic-bezier(.34,1.56,.64,1);
+  pointer-events: none; z-index: 3;
+}
+.asst-reaction.show { opacity: 1; transform: scale(1) rotate(0deg); }
+#asst-bubble.asst-celebrar { animation: asstCelebrar 1.1s ease-in-out; }
+@keyframes asstCelebrar {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  20% { transform: scale(1.18) rotate(-10deg); }
+  40% { transform: scale(1.05) rotate(8deg); }
+  60% { transform: scale(1.15) rotate(-6deg); }
+  80% { transform: scale(1.02) rotate(4deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  #asst-bubble { animation: none; }
+  #asst-bubble-wrap.notify .asst-ring { animation: none; }
+  #asst-bubble.asst-celebrar { animation: none; }
+}
+#asst-panel{display:none;position:fixed;right:16px;bottom:152px;width:370px;max-width:calc(100vw - 24px);height:520px;max-height:calc(100vh - 176px);z-index:9001;
+  flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.55),0 0 30px rgba(62,224,255,.12)}
+#asst-panel.open{display:flex;animation:asst-fadein .25s ease-out}
+.asst-header{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--panel2);border-bottom:1px solid var(--line)}
+.asst-avatar{width:38px;height:38px;border-radius:50%;overflow:hidden;flex:none;border:2px solid var(--yellow);background:var(--bg)}
+.asst-header-info{flex:1}
+.asst-header-name{font:700 .95rem var(--display)}
+.asst-header-status{font-size:.74rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.asst-header-status::before{content:'';width:7px;height:7px;border-radius:50%;background:#4ade80}
+.asst-close{background:none;border:0;color:var(--muted);font-size:1.1rem;cursor:pointer;padding:6px}
+.asst-close:hover{color:var(--text)}
+.asst-messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--bg)}
+.asst-msg{max-width:86%;padding:10px 13px;border-radius:16px;font-size:.9rem;line-height:1.5;animation:asst-fadein .25s ease-out;word-wrap:break-word}
+@keyframes asst-fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.asst-msg.bot{align-self:flex-start;background:var(--panel2);border:1px solid var(--line);border-bottom-left-radius:4px}
+.asst-msg.user{align-self:flex-end;background:var(--yellow);color:#14213a;font-weight:600;border-bottom-right-radius:4px}
+.asst-msg.bot strong{color:var(--yellow)}
+.asst-msg.bot a{color:var(--cyan)}
+.asst-msg.asst-typing{display:flex;gap:4px;padding:13px 15px}
+.asst-msg.asst-typing span{width:7px;height:7px;border-radius:50%;background:var(--cyan);animation:asst-bounce 1.2s infinite}
+.asst-msg.asst-typing span:nth-child(2){animation-delay:.15s}.asst-msg.asst-typing span:nth-child(3){animation-delay:.3s}
+@keyframes asst-bounce{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-5px);opacity:1}}
+.asst-options{display:flex;flex-wrap:wrap;gap:7px;padding:0 14px 10px;background:var(--bg)}
+.asst-options:empty{display:none}
+.asst-opt-btn{background:transparent;color:var(--text);border:1px solid var(--line);border-radius:999px;padding:7px 12px;font:600 .8rem var(--body);cursor:pointer}
+.asst-opt-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.asst-input-row{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line);background:var(--panel)}
+.asst-input{flex:1;min-width:0;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:999px;padding:10px 14px;font:inherit;font-size:.9rem}
+.asst-input:focus{outline:none;border-color:var(--cyan)}
+.asst-send{width:40px;height:40px;border-radius:50%;border:0;background:var(--yellow);color:#14213a;font-size:1rem;cursor:pointer;flex:none}
+.asst-send:disabled{opacity:.5;cursor:default}
+@media(max-width:480px){#asst-panel{right:8px;left:8px;width:auto;bottom:148px}}
+/* Cotação de materiais (Amazon / Mercado Livre) */
+.asst-msg.bot.asst-quote{max-width:100%;width:100%;padding:10px}
+.asst-q-item{margin-bottom:12px}
+.asst-q-item:last-of-type{margin-bottom:6px}
+.asst-q-head{font:700 .84rem var(--display);color:var(--yellow);margin-bottom:6px}
+.asst-q-head small{color:var(--muted);font:600 .74rem var(--body)}
+.asst-offer{display:grid;grid-template-columns:40px 1fr auto;gap:9px;align-items:center;padding:7px;border:1px solid var(--line);border-radius:12px;margin-bottom:6px;background:var(--panel)}
+.asst-offer.best{border-color:var(--cyan);box-shadow:0 0 0 1px rgba(62,224,255,.25)}
+.asst-offer .th{width:40px;height:40px;border-radius:8px;background:#fff;overflow:hidden;display:grid;place-items:center;font-size:1.1rem}
+.asst-offer .th img{width:100%;height:100%;object-fit:contain}
+.asst-offer .tt{font-size:.78rem;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.asst-offer .mt{font-size:.7rem;color:var(--muted);margin-top:2px}
+.asst-offer .mt b{color:var(--text)}
+.asst-offer .pr{text-align:right;font:700 .86rem var(--display);white-space:nowrap}
+.asst-offer .pr a{display:block;font:700 .7rem var(--body);color:var(--cyan);margin-top:2px}
+.asst-tag{display:inline-block;font:700 .62rem var(--body);padding:1px 6px;border-radius:999px;background:var(--cyan);color:#06222b;margin-left:4px;vertical-align:middle}
+.asst-q-est{font-size:.76rem;color:var(--muted);border:1px dashed var(--line);border-radius:10px;padding:7px 9px;margin-bottom:6px}
+.asst-q-links{font-size:.74rem;color:var(--muted)}
+.asst-q-links a{color:var(--cyan)}
+.asst-q-total{border-top:1px solid var(--line);padding-top:8px;margin-top:4px;font:700 .86rem var(--display)}
+.asst-q-total small{display:block;font:600 .7rem var(--body);color:var(--muted);margin-top:2px}
+.asst-q-copy{margin-top:8px}
+.asst-q-note{font-size:.68rem;color:var(--muted);margin-top:6px;line-height:1.4}
+.asst-msg.asst-typing small{align-self:center;margin-left:6px;color:var(--muted);font-size:.74rem}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><div class="logo" aria-hidden="true">⚡</div><div>MKP Engenharia<small>Elétrica e automação residencial</small></div></div>
+    <a class="btn ghost" href="#contato">Falar com a gente</a>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <span class="tag">Automação com Alexa · instalação por engenheiro eletricista</span>
+      <h1>Automatize sua casa com menos de <em>R$&nbsp;2.000</em></h1>
+      <p class="lead">Fale com a Alexa e a luz acende, o ar-condicionado liga e a casa fica do seu jeito. Veja ao lado como funciona e clique nos comandos para testar.</p>
+      <div class="cta-row">
+        <a class="btn primary" href="#kit">Montar meu kit</a>
+        <a class="btn ghost" href="#videos">Ver vídeos</a>
+      </div>
+    </div>
+
+    <div class="demo" aria-label="Demonstração interativa">
+      <div class="voice"><div class="ring" id="ring"></div><div id="say">Toque em um comando<small>Ou espere: a demonstração roda sozinha</small></div></div>
+      <div class="tiles">
+        <div class="tile" id="t-luz"><i>💡</i><b>Luz da sala</b><span>Desligada</span></div>
+        <div class="tile" id="t-ar"><i>❄️</i><b>Ar-condicionado</b><span>Desligado</span></div>
+        <div class="tile" id="t-tv"><i>📺</i><b>TV</b><span>Desligada</span></div>
+        <div class="tile" id="t-porta"><i>🔒</i><b>Porta e câmera</b><span>Destravada</span></div>
+      </div>
+      <div class="chips" id="chips"></div>
+      <p class="hint">Simulação ilustrativa dos comandos de voz.</p>
+    </div>
+  </div>
+</section>
+
+<section id="videos">
+  <div class="wrap">
+    <h2>Veja a Alexa em ação</h2>
+    <p class="sub">Demonstrações reais de automação residencial instaladas pela MKP.</p>
+    <div class="videos" id="videos-grid"></div>
+  </div>
+</section>
+
+<section id="fotos" hidden>
+  <div class="wrap">
+    <h2>Nossos trabalhos</h2>
+    <div class="gallery" id="gallery"></div>
+  </div>
+</section>
+
+<section id="kit">
+  <div class="wrap">
+    <div class="kitgrid">
+      <div>
+        <h2>Monte o seu kit e veja se cabe em R$&nbsp;2.000</h2>
+        <p class="sub">Marque o que você quer automatizar. A barra mostra em tempo real quanto sobra do seu limite, e você envia o kit escolhido direto para o nosso WhatsApp.</p>
+      </div>
+      <div class="kit">
+        <div id="items"></div>
+        <div class="meter" aria-live="polite">
+          <div class="row"><div class="total" id="total">R$ 0</div><div class="msg" id="msg"></div></div>
+          <div class="bar"><i id="fill"></i></div>
+        </div>
+        <a class="btn primary" id="wa" href="#contato" target="_blank" rel="noopener">Quero um orçamento deste kit</a>
+        <p class="note">Valores de referência. O orçamento final depende da sua casa.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Elétrica e automação com a mesma equipe</h2>
+    <p class="sub">Casa inteligente funciona melhor quando a instalação elétrica está em dia. Com a MKP, você resolve as duas coisas de uma vez.</p>
+    <div class="duo">
+      <div class="panel"><h3>Automação residencial</h3>
+        <ul><li>Luzes com cenas e horários</li><li>Ar-condicionado e TV pelo celular e pela voz</li><li>Tomadas com rotinas programadas</li><li>Sensores, câmeras e alertas</li></ul></div>
+      <div class="panel"><h3>Instalações elétricas</h3>
+        <ul><li>Instalações novas e reformas</li><li>Quadro de distribuição, DR e DPS</li><li>Circuitos para chuveiro e ar-condicionado</li><li>Revisão e laudo da instalação</li></ul></div>
+    </div>
+    <ol class="steps">
+      <li><h3>A gente conversa</h3><p>Você conta o que quer e eu avalio a sua instalação.</p></li>
+      <li><h3>Orçamento claro</h3><p>Equipamentos e valor total, sem surpresa.</p></li>
+      <li><h3>Instalação</h3><p>Montagem e testes, na maioria dos casos sem quebrar parede.</p></li>
+      <li><h3>Configuração</h3><p>Deixo tudo funcionando e ensino você a usar.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Dúvidas que todo mundo tem</h2>
+    <details><summary>Preciso trocar a fiação da casa?</summary><p>Na maioria dos casos, não. Antes de qualquer coisa, a MKP avalia a sua instalação e diz o que dá para aproveitar.</p></details>
+    <details><summary>Preciso falar com a Alexa para usar?</summary><p>Não. Tudo também funciona pelo aplicativo no celular. A voz é um extra.</p></details>
+    <details><summary>Isso é seguro?</summary><p>Sim. A instalação segue as normas técnicas, como a NBR 5410, e é feita por profissional habilitado, com registro no CREA.</p></details>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="final" id="contato">
+    <h2>Bora deixar sua casa mais inteligente?</h2>
+    <p>Chame a MKP Engenharia no WhatsApp, conte o que você quer e receba uma proposta com valor fechado.</p>
+    <a class="btn primary" id="wa2" href="#" target="_blank" rel="noopener">Chamar no WhatsApp</a>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">MKP Engenharia · Engenheiro Eletricista · CREA-XX 000000 · Cidade/UF<br>Alexa é marca da Amazon.com, Inc. A MKP Engenharia não é afiliada à Amazon.<br><a href="#" id="admin-link" hidden>Área do administrador</a></div>
+</footer>
+
+<a class="float" id="wa3" href="#" target="_blank" rel="noopener">💬 Falar no WhatsApp</a>
+
+
+<!-- Pachequinho · assistente IA -->
+<div id="asst-bubble-wrap" hidden>
+  <div class="asst-tooltip" id="asst-tooltip"></div>
+  <div class="asst-ring"></div>
+  <button id="asst-bubble" type="button" aria-label="Abrir o Pachequinho, assistente de engenharia elétrica" title="Pachequinho — engenharia elétrica e cotações">
+    <img src="https://iiqyegyucucgqdqinpsb.supabase.co/storage/v1/object/public/assets/pachequinho-bubble.png" alt="Pachequinho" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
+  </button>
+</div>
+<div id="asst-panel" role="dialog" aria-label="Chat com o Pachequinho">
+  <div class="asst-header">
+    <div class="asst-avatar"><img src="https://iiqyegyucucgqdqinpsb.supabase.co/storage/v1/object/public/assets/pachequinho-avatar.png" alt="" style="width:100%;height:100%;object-fit:cover;"></div>
+    <div class="asst-header-info"><div class="asst-header-name">Pachequinho</div><div class="asst-header-status">Engenharia elétrica · cotação de materiais</div></div>
+    <button class="asst-close" type="button" id="asst-close" aria-label="Fechar">✕</button>
+  </div>
+  <div class="asst-messages" id="asst-messages" aria-live="polite"></div>
+  <div class="asst-options" id="asst-options"></div>
+  <div class="asst-input-row">
+    <input class="asst-input" id="asst-input" maxlength="500" placeholder="Dúvida elétrica ou cotar material..." aria-label="Mensagem">
+    <button class="asst-send" type="button" id="asst-send" aria-label="Enviar">➤</button>
+  </div>
+</div>
+
+<dialog id="dlg-login">
+  <div class="dh"><h3>Entrar</h3><button class="mini" type="button" data-close>Fechar</button></div>
+  <input id="lg-email" type="email" placeholder="E-mail" autocomplete="username" aria-label="E-mail">
+  <input id="lg-pass" type="password" placeholder="Senha" autocomplete="current-password" aria-label="Senha">
+  <button class="btn primary" type="button" id="lg-go" style="width:100%;margin-top:10px">Entrar</button>
+  <p class="amsg" id="lg-msg" aria-live="polite"></p>
+</dialog>
+<dialog id="dlg-admin">
+  <div class="dh"><h2 style="margin:0">Painel de ajustes</h2><div><button class="mini" type="button" id="ad-out">Sair</button> <button class="mini" type="button" data-close>Fechar</button></div></div>
+  <div class="tabs"><button class="mini on" type="button" data-tab="site">Ajustes do site</button><button class="mini" type="button" data-tab="tools">Ferramentas elétricas</button><button class="mini" type="button" data-tab="auto">Automação e rede</button><button class="mini" type="button" data-tab="visit">Visita técnica</button><button class="mini" type="button" data-tab="prod">Produtos</button><button class="mini" type="button" data-tab="quote">Orçamento</button><button class="mini" type="button" data-tab="scada">CLP / SCADA</button></div>
+  <div id="pane-site"><div id="ad-body"></div>
+  <button class="btn primary" type="button" id="ad-save" style="margin-top:16px">Salvar alterações</button>
+  <p class="amsg" id="ad-msg" aria-live="polite"></p></div>
+  <div id="pane-tools" hidden></div>
+  <div id="pane-auto" hidden></div>
+  <div id="pane-visit" hidden></div>
+  <div id="pane-prod" hidden></div>
+  <div id="pane-quote" hidden></div>
+  <div id="pane-scada" hidden></div>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+(function(){
+  var WHATS = "5541984374840";   // 55 + DDD + número
+  var LIMIT = 2000;
+  // Supabase: preencha depois de criar o projeto. Vazio = página funciona normal, sem painel.
+  var SUPABASE_URL = "https://drefmtvllekfytxwsqir.supabase.co";
+  var SUPABASE_KEY = "sb_publishable_5OMo-c_-Yf_968rXl_j4Yg_C0RYJUda";   // chave "anon public" (pode ficar no código)
+
+  var DEF = {
+    kit_items: [
+      {e:"💡", n:"Interruptores inteligentes (3 pontos de luz)", p:180, on:true},
+      {e:"🔌", n:"Tomadas inteligentes (4 unidades)", p:160, on:true},
+      {e:"❄️", n:"Ar-condicionado e TV pelo celular", p:90, on:true},
+      {e:"🚪", n:"Sensores de porta e movimento (3 unidades)", p:150, on:false},
+      {e:"📹", n:"Câmera Wi-Fi interna", p:130, on:false},
+      {e:"🌈", n:"Fita de LED com cenas de iluminação", p:120, on:false},
+      {e:"🗣️", n:"Central e assistente de voz", p:350, on:false},
+      {e:"🛠️", n:"Instalação e configuração", p:600, on:true}
+    ],
+    videos: [
+      {id:"", title:"Luzes e cenas com a Alexa", text:"Acenda e apague a casa só falando."},
+      {id:"", title:"Ar-condicionado e TV por voz", text:"Controle os aparelhos sem levantar do sofá."},
+      {id:"", title:"Rotina “Boa noite”", text:"Um comando desliga tudo e trava a casa."}
+    ],
+    photos: []
+  };
+  function clone(o){ return JSON.parse(JSON.stringify(o)); }
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+  function brl(v){ return "R$ " + Number(v).toLocaleString("pt-BR"); }
+  function ytId(s){ s = String(s||"").trim(); var m = s.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/); return m ? m[1] : (/^[\w-]{11}$/.test(s) ? s : ""); }
+  function link(text){ return "https://wa.me/" + WHATS + "?text=" + encodeURIComponent(text); }
+
+  var data = clone(DEF), draft = null, gone = [], sb = null;
+
+  // ---------- vídeos, fotos e kit ----------
+  function renderVideos(){
+    $("videos-grid").innerHTML = data.videos.map(function(v){
+      var id = ytId(v.id);
+      var inner = id
+        ? '<iframe src="https://www.youtube-nocookie.com/embed/'+id+'" title="'+esc(v.title)+'" loading="lazy" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen></iframe>'
+        : '<div><div class="play">▶</div>Vídeo em breve</div>';
+      return '<div class="vid"><div class="frame">'+inner+'</div><div class="t"><h3>'+esc(v.title)+'</h3><p>'+esc(v.text)+'</p></div></div>';
+    }).join("");
+  }
+  function renderGallery(){
+    var ok = data.photos.filter(function(p){ return /^https:\/\//.test(p.u); });
+    $("fotos").hidden = !ok.length;
+    $("gallery").innerHTML = ok.map(function(p){
+      return '<figure><img src="'+esc(p.u)+'" alt="'+esc(p.c||"Trabalho da MKP Engenharia")+'" loading="lazy">'+(p.c?'<figcaption>'+esc(p.c)+'</figcaption>':'')+'</figure>';
+    }).join("");
+  }
+  function renderKit(){
+    $("items").innerHTML = data.kit_items.map(function(it){
+      var p = Number(it.p)||0;
+      return '<label><input type="checkbox" data-price="'+p+'" data-name="'+esc(it.n)+'"'+(it.on?" checked":"")+'><span class="n">'+esc(it.e)+" "+esc(it.n)+'</span><span class="p">'+brl(p)+'</span></label>';
+    }).join("");
+    $("items").querySelectorAll("input").forEach(function(b){ b.addEventListener("change", updateKit); });
+    updateKit();
+  }
+  function updateKit(){
+    var sum = 0, names = [];
+    $("items").querySelectorAll("input").forEach(function(b){
+      if(b.checked){ sum += Number(b.getAttribute("data-price")); names.push(b.getAttribute("data-name")); }
+    });
+    var over = sum > LIMIT;
+    $("total").textContent = brl(sum);
+    $("fill").style.width = Math.min(100, sum / LIMIT * 100) + "%";
+    $("fill").className = over ? "over" : "";
+    $("msg").className = "msg" + (over ? " over" : "");
+    $("msg").textContent = over ? "Passou " + brl(sum - LIMIT) + " de R$ 2.000" : "Ainda sobram " + brl(LIMIT - sum) + " 😉";
+    $("wa").href = link(names.length
+      ? "Olá, MKP Engenharia! Quero um orçamento para este kit (ref. " + brl(sum) + "): " + names.join("; ") + "."
+      : "Olá, MKP Engenharia! Quero um orçamento de automação residencial.");
+  }
+  function renderAll(){ renderKit(); renderVideos(); renderGallery(); }
+
+  var hello = link("Olá, MKP Engenharia! Quero um orçamento de automação residencial.");
+  $("wa2").href = hello; $("wa3").href = hello;
+  renderAll();
+
+  // ---------- demo Alexa ----------
+  var st = {luz:false, ar:false, tv:false, porta:false};
+  var CMDS = [
+    {t:"Alexa, acende a luz da sala", f:function(){st.luz=true;}},
+    {t:"Alexa, liga o ar-condicionado", f:function(){st.ar=true;}},
+    {t:"Alexa, liga a TV", f:function(){st.tv=true;}},
+    {t:"Alexa, boa noite", f:function(){st.luz=false;st.ar=false;st.tv=false;st.porta=true;}},
+    {t:"Alexa, bom dia", f:function(){st.luz=true;st.porta=false;}}
+  ];
+  var LBL = {luz:["Desligada","Acesa"], ar:["Desligado","Ligado · 23 °C"], tv:["Desligada","Ligada"], porta:["Destravada","Travada · câmera ativa"]};
+  var ring = $("ring"), say = $("say"), chips = $("chips");
+  var timer = null, auto = !window.matchMedia("(prefers-reduced-motion: reduce)").matches, idx = 0;
+  function paint(){
+    ["luz","ar","tv","porta"].forEach(function(k){
+      var el = $("t-"+k);
+      el.className = "tile" + (st[k] ? " on" : "");
+      el.querySelector("span").textContent = LBL[k][st[k] ? 1 : 0];
+      if(k==="porta") el.querySelector("i").textContent = st[k] ? "🔒" : "🔓";
+    });
+  }
+  function run(i){
+    var c = CMDS[i];
+    ring.className = "ring on";
+    say.innerHTML = "“" + c.t + "”<small>Ouvindo…</small>";
+    setTimeout(function(){
+      c.f(); paint();
+      ring.className = "ring";
+      say.innerHTML = "“" + c.t + "”<small>Pronto! Comando executado.</small>";
+    }, 900);
+  }
+  CMDS.forEach(function(c,i){
+    var b = document.createElement("button"); b.className = "chip"; b.type = "button"; b.textContent = c.t.replace("Alexa, ","");
+    b.addEventListener("click", function(){ auto = false; clearInterval(timer); run(i); });
+    chips.appendChild(b);
+  });
+  paint();
+  if(auto){
+    timer = setInterval(function(){ if(!auto){clearInterval(timer);return;} run(idx); idx = (idx+1) % CMDS.length; }, 3600);
+    run(idx); idx = 1;
+  }
+
+  // ---------- login e painel ----------
+  document.querySelectorAll("[data-close]").forEach(function(b){
+    b.addEventListener("click", function(){ b.closest("dialog").close(); });
+  });
+  if(!(SUPABASE_URL && SUPABASE_KEY && window.supabase)) return;
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  window.__mkpSb = sb; // usado pelo Pachequinho para saber se há administrador logado
+  $("admin-link").hidden = false;
+
+  sb.from("site_content").select("key,value").then(function(r){
+    if(r.data){ r.data.forEach(function(row){ if(row.key in data && Array.isArray(row.value)) data[row.key] = row.value; }); renderAll(); }
+  });
+
+  $("admin-link").addEventListener("click", async function(e){
+    e.preventDefault();
+    var s = await sb.auth.getSession();
+    if(s.data.session) openAdmin(); else $("dlg-login").showModal();
+  });
+  async function doLogin(){
+    $("lg-msg").textContent = "Entrando…";
+    var r = await sb.auth.signInWithPassword({email:$("lg-email").value.trim(), password:$("lg-pass").value});
+    if(r.error){ $("lg-msg").textContent = "E-mail ou senha incorretos."; return; }
+    $("lg-pass").value = ""; $("lg-msg").textContent = ""; $("dlg-login").close(); openAdmin();
+  }
+  $("lg-go").addEventListener("click", doLogin);
+  $("lg-pass").addEventListener("keydown", function(e){ if(e.key==="Enter") doLogin(); });
+  $("ad-out").addEventListener("click", async function(){ await sb.auth.signOut(); $("dlg-admin").close(); });
+
+  function openAdmin(){ draft = clone(data); gone = []; $("ad-msg").textContent = ""; renderAdmin(); $("dlg-admin").showModal(); }
+  function inp(l,i,f,v,x){ return '<input data-l="'+l+'" data-i="'+i+'" data-f="'+f+'" value="'+esc(v)+'" '+(x||"")+'>'; }
+  function del(l,i){ return '<button class="mini" type="button" data-del="'+l+'" data-i="'+i+'" aria-label="Remover">✕</button>'; }
+  function renderAdmin(){
+    var h = '<h3>Kit e preços</h3><p class="sub" style="margin-bottom:8px">Emoji, nome, preço em reais e se já vem marcado.</p>';
+    draft.kit_items.forEach(function(it,i){
+      h += '<div class="arow">'+inp("kit_items",i,"e",it.e,'maxlength="4" aria-label="Emoji"')+inp("kit_items",i,"n",it.n,'aria-label="Nome"')
+        +inp("kit_items",i,"p",it.p,'type="number" min="0" aria-label="Preço em reais"')
+        +'<label class="chk"><input type="checkbox" data-l="kit_items" data-i="'+i+'" data-f="on"'+(it.on?" checked":"")+'> marcado</label>'+del("kit_items",i)+'</div>';
+    });
+    h += '<button class="mini" type="button" data-add="kit_items">+ Adicionar item</button>';
+    h += '<h3 style="margin-top:22px">Vídeos</h3><p class="sub" style="margin-bottom:8px">Cole o link do YouTube (ou só o ID), o título e uma descrição.</p>';
+    draft.videos.forEach(function(v,i){
+      h += '<div class="arow v">'+inp("videos",i,"id",v.id,'placeholder="Link do YouTube" aria-label="Link do YouTube"')+inp("videos",i,"title",v.title,'placeholder="Título" aria-label="Título"')
+        +inp("videos",i,"text",v.text,'placeholder="Descrição" aria-label="Descrição"')+del("videos",i)+'</div>';
+    });
+    h += '<button class="mini" type="button" data-add="videos">+ Adicionar vídeo</button>';
+    h += '<h3 style="margin-top:22px">Fotos dos trabalhos</h3><p class="sub" style="margin-bottom:8px">As fotos são reduzidas automaticamente antes do envio.</p>';
+    draft.photos.forEach(function(p,i){
+      h += '<div class="arow f"><img src="'+esc(p.u)+'" alt="">'+inp("photos",i,"c",p.c,'placeholder="Legenda (opcional)" aria-label="Legenda"')+del("photos",i)+'</div>';
+    });
+    h += '<input type="file" id="up" accept="image/*" multiple>';
+    $("ad-body").innerHTML = h;
+  }
+  var body = $("ad-body");
+  function edit(e){
+    var t = e.target, l = t.getAttribute("data-l"); if(!l) return;
+    var f = t.getAttribute("data-f"), it = draft[l][Number(t.getAttribute("data-i"))];
+    it[f] = t.type==="checkbox" ? t.checked : (f==="p" ? (Number(t.value)||0) : t.value);
+  }
+  function shrink(file){
+    return new Promise(function(ok){
+      var img = new Image();
+      img.onload = function(){
+        var s = Math.min(1, 1600 / Math.max(img.width, img.height)), c = document.createElement("canvas");
+        c.width = Math.round(img.width*s); c.height = Math.round(img.height*s);
+        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+        c.toBlob(ok, "image/jpeg", .82);
+      };
+      img.src = URL.createObjectURL(file);
+    });
+  }
+  async function upload(files){
+    var m = $("ad-msg"), erro = "";
+    for(var k = 0; k < files.length; k++){
+      m.textContent = "Enviando foto " + (k+1) + " de " + files.length + "…";
+      var name = Date.now() + "-" + k + ".jpg";
+      var r = await sb.storage.from("fotos").upload(name, await shrink(files[k]), {contentType:"image/jpeg"});
+      if(r.error){ erro = "Erro no envio: " + r.error.message; continue; }
+      draft.photos.push({u: sb.storage.from("fotos").getPublicUrl(name).data.publicUrl, c:"", f:name});
+    }
+    renderAdmin(); m.textContent = erro || "Fotos enviadas. Clique em Salvar para publicar.";
+  }
+  // ---------- ferramentas elétricas ----------
+  document.querySelectorAll("[data-tab]").forEach(function(b){
+    b.addEventListener("click", function(){
+      var tab = b.getAttribute("data-tab"); ["site","tools","auto","visit","prod","quote","scada"].forEach(function(n){ $("pane-" + n).hidden = n !== tab; }); if(tab === "prod" || tab === "quote") loadProds();
+      document.querySelectorAll("[data-tab]").forEach(function(x){ x.classList.toggle("on", x === b); });
+    });
+  });
+  var SEC = [1.5,2.5,4,6,10,16,25,35,50,70,95];
+  // Capacidade de condução (A): cobre, isolação PVC 70 °C, referência NBR 5410 (tabela de capacidade de condução). Confira com a sua edição da norma.
+  var AMP = {
+    A1:{2:[14.5,19.5,26,34,46,61,80,99,119,151,182], 3:[13.5,18,24,31,42,56,73,89,108,136,164]},
+    B1:{2:[17.5,24,32,41,57,76,101,125,151,192,232], 3:[15.5,21,28,36,50,68,89,111,134,171,207]},
+    C:{2:[19.5,27,36,46,63,85,112,138,168,213,258], 3:[17.5,24,32,41,57,76,96,119,144,184,223]}
+  };
+  var FCT = {10:1.22,15:1.17,20:1.12,25:1.06,30:1,35:.94,40:.87,45:.79,50:.71};
+  var FCA = {1:1,2:.8,3:.7,4:.65,5:.6,6:.57,7:.54,8:.52,9:.5,12:.45,16:.41,20:.38};
+  var BRK = [6,10,16,20,25,32,40,50,63,70,80,90,100,125,150,175,200,225];
+  var RHO = 0.0225;   // Ω·mm²/m, cobre a 70 °C
+  var SYS = [["mono","Monofásico (fase + neutro)"],["bi","Bifásico (2 fases)"],["tri","Trifásico"]];
+  var loads = [{d:"Iluminação",w:600,q:1},{d:"Tomadas de uso geral",w:3000,q:1},{d:"Chuveiro",w:5500,q:1}];
+
+  function fmt(n){ return Number(n).toLocaleString("pt-BR",{maximumFractionDigits:2}); }
+  function nv(id){ return Number($(id).value)||0; }
+  function fld(id,l,h){ return '<div><label for="'+id+'">'+l+'</label>'+h+'</div>'; }
+  function num(id,v,x){ return '<input id="'+id+'" type="number" step="any" min="0" value="'+v+'" '+(x||"")+'>'; }
+  function sel(id,o,d){ return '<select id="'+id+'">'+o.map(function(a){ return '<option value="'+a[0]+'"'+(String(a[0])===String(d)?" selected":"")+'>'+a[1]+'</option>'; }).join("")+'</select>'; }
+  function keys(o,suf){ return Object.keys(o).map(function(k){ return [k, k+suf]; }); }
+  function rowsHtml(){
+    return loads.map(function(r,i){
+      return '<div class="arow l"><input data-li="'+i+'" data-lf="d" value="'+esc(r.d)+'" aria-label="Descrição"><input data-li="'+i+'" data-lf="w" type="number" min="0" value="'+r.w+'" aria-label="Potência em W"><input data-li="'+i+'" data-lf="q" type="number" min="0" value="'+r.q+'" aria-label="Quantidade"><button class="mini" type="button" data-ldel="'+i+'" aria-label="Remover">✕</button></div>';
+    }).join("");
+  }
+
+  function renderTools(){
+    $("pane-tools").innerHTML =
+      '<p class="sub" style="margin-bottom:10px">Ferramentas de apoio ao projeto. Os resultados são estimativas: confira com a NBR 5410 e com o seu projeto. A responsabilidade técnica é sua.</p>'
+    + '<details open><summary>1. Corrente e potência</summary><div class="tf">'
+    + fld("c1-sys","Sistema",sel("c1-sys",SYS,"mono")) + fld("c1-v","Tensão (V)",num("c1-v",127))
+    + fld("c1-p","Potência",num("c1-p",5500)) + fld("c1-u","Unidade",sel("c1-u",[["W","W"],["kW","kW"],["kVA","kVA"],["cv","cv (motor)"]],"W"))
+    + fld("c1-fp","Fator de potência",num("c1-fp",1,'max="1"')) + fld("c1-eta","Rendimento % (só cv)",num("c1-eta",90,'max="100"'))
+    + '</div><div class="res" id="c1-out" aria-live="polite"></div></details>'
+    + '<details><summary>2. Condutor, disjuntor e queda de tensão</summary><div class="tf">'
+    + fld("c2-sys","Sistema",sel("c2-sys",SYS,"mono")) + fld("c2-v","Tensão (V)",num("c2-v",127))
+    + fld("c2-i","Corrente de projeto Ib (A)",num("c2-i",30)) + fld("c2-l","Comprimento (m)",num("c2-l",20))
+    + fld("c2-q","Queda máx. (%)",num("c2-q",4)) + fld("c2-m","Método de instalação",sel("c2-m",[["A1","A1 · eletroduto em parede isolante"],["B1","B1 · eletroduto aparente ou em alvenaria"],["C","C · cabo sobre parede"]],"B1"))
+    + fld("c2-t","Tipo de circuito",sel("c2-t",[[1.5,"Iluminação (mín. 1,5 mm²)"],[2.5,"Força e tomadas (mín. 2,5 mm²)"]],2.5))
+    + fld("c2-tp","Temperatura ambiente (°C)",sel("c2-tp",keys(FCT,""),30)) + fld("c2-n","Circuitos agrupados",sel("c2-n",keys(FCA,""),1))
+    + '</div><div class="res" id="c2-out" aria-live="polite"></div></details>'
+    + '<details><summary>3. Carga e demanda do quadro</summary><div class="arow l" style="color:var(--muted);font-size:.82rem"><span>Descrição</span><span>Potência (W)</span><span>Qtd.</span><span></span></div>'
+    + '<div id="l-rows">'+rowsHtml()+'</div><button class="mini" type="button" id="l-add">+ Adicionar carga</button><div class="tf" style="margin-top:12px">'
+    + fld("c3-sys","Sistema",sel("c3-sys",SYS,"tri")) + fld("c3-v","Tensão (V)",num("c3-v",220))
+    + fld("c3-fd","Fator de demanda (%)",num("c3-fd",70,'max="100"')) + fld("c3-fp","Fator de potência",num("c3-fp",0.92,'max="1"'))
+    + '</div><div class="res" id="c3-out" aria-live="polite"></div></details>';
+    calcAll();
+  }
+
+  function calc1(){
+    var V = nv("c1-v"), P = nv("c1-p"), u = $("c1-u").value, fp = Math.min(1, nv("c1-fp") || 1), eta = Math.min(1, (nv("c1-eta") || 100) / 100);
+    if(!V || !P){ $("c1-out").textContent = "Preencha tensão e potência."; return; }
+    var kW, kVA;
+    if(u === "kVA"){ kVA = P; kW = P * fp; }
+    else { kW = u === "W" ? P/1000 : (u === "kW" ? P : P * 0.7355 / eta); kVA = kW / fp; }
+    var k = $("c1-sys").value === "tri" ? Math.sqrt(3) : 1;
+    $("c1-out").innerHTML = 'Corrente de projeto <b>' + fmt(kVA*1000/(k*V)) + ' A</b><br>Ativa ' + fmt(kW) + ' kW · aparente ' + fmt(kVA) + ' kVA · reativa ' + fmt(Math.sqrt(Math.max(0, kVA*kVA - kW*kW))) + ' kVAr';
+  }
+  function calc2(){
+    var V = nv("c2-v"), Ib = nv("c2-i"), L = nv("c2-l"), pct = nv("c2-q") || 4, out = $("c2-out");
+    if(!V || !Ib || !L){ out.textContent = "Preencha tensão, corrente e comprimento."; return; }
+    var tri = $("c2-sys").value === "tri", iz = AMP[$("c2-m").value][tri ? 3 : 2];
+    var f = FCT[$("c2-tp").value] * FCA[$("c2-n").value], kq = tri ? Math.sqrt(3) : 2;
+    function idx(min){ for(var k = 0; k < SEC.length; k++){ if(SEC[k] >= min) return k; } return -1; }
+    var kI = -1; for(var a = 0; a < SEC.length; a++){ if(iz[a]*f >= Ib){ kI = a; break; } }
+    var kQ = idx(kq * RHO * L * Ib / (V * pct / 100)), kM = idx(Number($("c2-t").value)), In = 0;
+    for(var b = 0; b < BRK.length; b++){ if(BRK[b] >= Ib){ In = BRK[b]; break; } }
+    if(kI < 0 || kQ < 0 || !In){ out.textContent = "Fora da faixa da tabela (até 95 mm² e 225 A). Dimensione manualmente."; return; }
+    var k = Math.max(kI, kQ, kM);
+    while(k < SEC.length && iz[k]*f < In) k++;
+    if(k >= SEC.length){ out.textContent = "Fora da faixa da tabela (até 95 mm²). Dimensione manualmente."; return; }
+    var dv = kq * RHO * L * Ib / SEC[k];
+    out.innerHTML = 'Fatores de correção: ' + fmt(f) + ' (temperatura × agrupamento)<br>'
+      + 'Por capacidade de corrente: ' + fmt(SEC[kI]) + ' mm² · por queda de tensão: ' + fmt(SEC[kQ]) + ' mm² · mínimo do tipo: ' + fmt(SEC[kM]) + ' mm²<br>'
+      + 'Condutor adotado <b>' + fmt(SEC[k]) + ' mm²</b> (Iz corrigida ' + fmt(iz[k]*f) + ' A)<br>'
+      + 'Disjuntor <b>' + In + ' A</b> (Ib ≤ In ≤ Iz)<br>'
+      + 'Queda de tensão real: ' + fmt(dv/V*100) + ' % (' + fmt(dv) + ' V)<br>'
+      + '<small>Cobre, isolação PVC 70 °C, 2 ou 3 condutores carregados. Não considera harmônicos, curto-circuito nem DR.</small>';
+  }
+  function calc3(){
+    var V = nv("c3-v"), fd = nv("c3-fd") / 100, fp = Math.min(1, nv("c3-fp") || 1), tot = 0;
+    loads.forEach(function(r){ tot += (Number(r.w)||0) * (Number(r.q)||0); });
+    if(!V){ $("c3-out").textContent = "Preencha a tensão."; return; }
+    var kW = tot / 1000, dem = kW * fd, kVA = dem / fp, k = $("c3-sys").value === "tri" ? Math.sqrt(3) : 1;
+    $("c3-out").innerHTML = 'Carga instalada ' + fmt(kW) + ' kW<br>Demanda <b>' + fmt(dem) + ' kW</b> (' + fmt(kVA) + ' kVA)<br>Corrente de demanda <b>' + fmt(kVA*1000/(k*V)) + ' A</b>';
+  }
+  function calcAll(){ calc1(); calc2(); calc3(); }
+  var tp = $("pane-tools");
+  tp.addEventListener("input", function(e){
+    var t = e.target, li = t.getAttribute("data-li");
+    if(li !== null){ var f = t.getAttribute("data-lf"); loads[Number(li)][f] = f === "d" ? t.value : (Number(t.value)||0); }
+    calcAll();
+  });
+  tp.addEventListener("change", calcAll);
+  tp.addEventListener("click", function(e){
+    var t = e.target.closest("button"); if(!t) return;
+    if(t.id === "l-add"){ loads.push({d:"Nova carga",w:0,q:1}); }
+    else if(t.getAttribute("data-ldel") !== null){ loads.splice(Number(t.getAttribute("data-ldel")), 1); }
+    else return;
+    $("l-rows").innerHTML = rowsHtml(); calc3();
+  });
+  renderTools();
+
+  // ---------- ferramentas de automação e rede ----------
+  var DEV = {
+    luz:["Lâmpadas, interruptores e tomadas inteligentes", -75],
+    sensor:["Sensores de porta e movimento", -75],
+    voz:["Assistente de voz (Alexa)", -70],
+    cam:["Câmera Wi-Fi", -65]
+  };
+  var lastTest = null;
+  function getLog(){ try{ return JSON.parse(localStorage.getItem("mkp_medicoes") || "[]"); }catch(e){ return []; } }
+  function setLog(a){ try{ localStorage.setItem("mkp_medicoes", JSON.stringify(a.slice(-30))); }catch(e){} }
+  function logHtml(){
+    var a = getLog();
+    if(!a.length) return "Nenhuma medição registrada neste aparelho.";
+    return a.map(function(m){ return "<b>" + esc(m.r) + "</b> · " + fmt(m.p) + " ms · jitter " + fmt(m.j) + " ms · " + (m.d == null ? "download n/d" : fmt(m.d) + " Mbps"); }).join("<br>");
+  }
+  function renderAuto(){
+    var c = navigator.connection;
+    var net = c ? "O navegador informa: tipo " + (c.effectiveType || "?") + ", cerca de " + (c.downlink || "?") + " Mbps, RTT " + (c.rtt || "?") + " ms." : "Este navegador não informa dados de rede.";
+    $("pane-auto").innerHTML =
+      '<p class="sub" style="margin-bottom:10px">O navegador não consegue ler a intensidade do sinal Wi-Fi (dBm). Aqui você mede a qualidade da conexão em cada cômodo e interpreta o valor de dBm lido por um aplicativo de análise de Wi-Fi.</p>'
+    + '<details open><summary>1. Teste de conexão por cômodo</summary><div class="tf">' + fld("w-r","Cômodo",'<input id="w-r" value="Sala">') + '</div>'
+    + '<div class="cta2"><button class="mini" type="button" id="w-go">Medir agora</button><button class="mini" type="button" id="w-save" disabled>Registrar medição</button><button class="mini" type="button" id="w-clr">Limpar registros</button></div>'
+    + '<div class="res" id="w-out" aria-live="polite">' + esc(net) + '</div><div class="res" id="w-log">' + logHtml() + '</div>'
+    + '<p class="sub" style="font-size:.82rem;margin-top:8px">Dica: fique no ponto onde o dispositivo será instalado, meça em cada cômodo e compare. O teste inclui o caminho até a internet.</p></details>'
+    + '<details><summary>2. Sinal Wi-Fi (dBm) por tipo de dispositivo</summary><div class="tf">'
+    + fld("s-d","Dispositivo",sel("s-d",[["luz",DEV.luz[0]],["sensor",DEV.sensor[0]],["voz",DEV.voz[0]],["cam",DEV.cam[0]]],"luz"))
+    + fld("s-b","Banda",sel("s-b",[["2.4","2,4 GHz"],["5","5 GHz"]],"2.4"))
+    + fld("s-v","Sinal lido no app (dBm)",'<input id="s-v" type="number" step="any" placeholder="ex.: -62">')
+    + '</div><div class="res" id="s-out" aria-live="polite"></div></details>'
+    + '<details><summary>3. Câmeras: banda e armazenamento</summary><div class="tf">'
+    + fld("k-n","Nº de câmeras",num("k-n",2)) + fld("k-b","Bitrate por câmera (Mbps)",num("k-b",2))
+    + fld("k-d","Dias de gravação",num("k-d",7)) + fld("k-p","Tempo gravando (%)",num("k-p",100,'max="100"'))
+    + '</div><div class="res" id="k-out" aria-live="polite"></div></details>'
+    + '<details><summary>4. Consumo dos dispositivos conectados</summary><div class="tf">'
+    + fld("e-n","Nº de dispositivos",num("e-n",10)) + fld("e-w","Consumo de cada um (W)",num("e-w",1.5))
+    + fld("e-h","Horas ligado por dia",num("e-h",24,'max="24"')) + fld("e-t","Tarifa (R$/kWh)",num("e-t",0.9))
+    + '</div><div class="res" id="e-out" aria-live="polite"></div><p class="sub" style="font-size:.82rem;margin-top:8px">Use a tarifa da conta de luz do cliente. O consumo de cada dispositivo está na embalagem ou no manual.</p></details>';
+    calcAuto();
+  }
+
+  function calcSig(){
+    var raw = $("s-v").value, out = $("s-out");
+    if(raw === ""){ out.textContent = "Digite o valor lido no aplicativo (por exemplo, -62)."; return; }
+    var dbm = -Math.abs(Number(raw)), d = DEV[$("s-d").value];
+    var q = dbm >= -50 ? "excelente" : dbm >= -60 ? "muito bom" : dbm >= -67 ? "bom" : dbm >= -75 ? "regular" : dbm >= -80 ? "fraco" : "muito fraco";
+    var ok = dbm >= d[1];
+    out.innerHTML = 'Sinal <b>' + fmt(dbm) + ' dBm</b>: ' + q + '.<br>' + (ok ? 'Adequado' : '<b>Abaixo do recomendado</b>') + ' para ' + d[0].toLowerCase() + ' (referência: ' + d[1] + ' dBm ou melhor).'
+      + (ok ? '' : '<br>Aproxime um ponto de acesso, use repetidor ou mesh, ou mude o dispositivo de lugar.')
+      + '<br><small>' + ($("s-b").value === "2.4" ? '2,4 GHz alcança mais longe, mas sofre mais interferência. A maioria dos dispositivos de automação usa só 2,4 GHz.' : '5 GHz é mais rápido, porém atravessa menos paredes. Confirme se o dispositivo aceita 5 GHz.') + ' Valores de referência práticos, não de norma.</small>';
+  }
+  function calcCam(){
+    var n = nv("k-n"), b = nv("k-b"), d = nv("k-d"), p = Math.min(100, nv("k-p")) / 100, out = $("k-out");
+    if(!n || !b){ out.textContent = "Preencha o número de câmeras e o bitrate."; return; }
+    var gb = n * b * 10.8 * p * d;   // 1 Mbps contínuo = 10,8 GB por dia
+    out.innerHTML = 'Upload necessário para ver à distância: <b>' + fmt(n * b * 1.3) + ' Mbps</b> (com 30% de folga)<br>Armazenamento em ' + fmt(d) + ' dias: <b>' + (gb >= 1000 ? fmt(gb/1000) + ' TB' : fmt(gb) + ' GB') + '</b> (' + fmt(n * b * 10.8 * p) + ' GB por dia)';
+  }
+  function calcPow(){
+    var n = nv("e-n"), w = nv("e-w"), h = Math.min(24, nv("e-h")), t = nv("e-t"), out = $("e-out");
+    if(!n || !w){ out.textContent = "Preencha o número de dispositivos e o consumo."; return; }
+    var kwh = n * w * h * 30 / 1000;
+    out.innerHTML = 'Consumo: <b>' + fmt(kwh) + ' kWh por mês</b><br>Custo aproximado: <b>R$ ' + fmt(kwh * t) + ' por mês</b>';
+  }
+  function calcAuto(){ calcSig(); calcCam(); calcPow(); }
+
+  async function measure(){
+    var out = $("w-out"), go = $("w-go"); go.disabled = true; $("w-save").disabled = true; lastTest = null;
+    out.textContent = "Medindo latência…";
+    var t = [], i, s;
+    for(i = 0; i < 8; i++){
+      s = performance.now();
+      try{ await fetch("https://www.gstatic.com/generate_204?r=" + Date.now() + i, {mode:"no-cors", cache:"no-store"}); t.push(performance.now() - s); }catch(x){}
+    }
+    if(t.length < 3){ out.textContent = "Não consegui medir. Verifique se há internet e tente de novo."; go.disabled = false; return; }
+    var avg = t.reduce(function(a,b){ return a + b; }, 0) / t.length, jit = 0;
+    for(i = 1; i < t.length; i++) jit += Math.abs(t[i] - t[i-1]);
+    jit = jit / (t.length - 1);
+    out.textContent = "Medindo download…";
+    var d = null;
+    try{
+      s = performance.now();
+      var r = await fetch("https://speed.cloudflare.com/__down?bytes=5000000&r=" + Date.now(), {cache:"no-store"});
+      var buf = await r.arrayBuffer();
+      d = buf.byteLength * 8 / 1e6 / ((performance.now() - s) / 1000);
+    }catch(x){}
+    lastTest = {p:avg, j:jit, d:d};
+    var v = avg < 50 && jit < 20 ? "Boa para automação e câmeras." : (avg < 100 && jit < 40 ? "Aceitável para lâmpadas e tomadas; câmeras podem engasgar." : "Instável neste ponto. Reposicione o roteador ou use repetidor/mesh.");
+    out.innerHTML = 'Latência <b>' + fmt(avg) + ' ms</b> · jitter <b>' + fmt(jit) + ' ms</b> · download ' + (d == null ? 'não medido' : '<b>' + fmt(d) + ' Mbps</b>') + '<br>' + v;
+    go.disabled = false; $("w-save").disabled = false;
+  }
+  var pa = $("pane-auto");
+  pa.addEventListener("input", calcAuto);
+  pa.addEventListener("change", calcAuto);
+  pa.addEventListener("click", function(e){
+    var t = e.target.closest("button"); if(!t) return;
+    if(t.id === "w-go") measure();
+    else if(t.id === "w-save" && lastTest){
+      var a = getLog(); a.push({r:($("w-r").value.trim() || "Sem nome"), p:lastTest.p, j:lastTest.j, d:lastTest.d});
+      setLog(a); $("w-log").innerHTML = logHtml(); t.disabled = true;
+    }
+    else if(t.id === "w-clr"){ setLog([]); $("w-log").innerHTML = logHtml(); }
+  });
+  renderAuto();
+
+  // ---------- visita técnica, produtos e orçamento ----------
+  var CHK = [
+    {t:"Elétrica", k:"el", it:[
+      "Tensão da rede confirmada (127/220 V)",
+      "Quadro de distribuição com espaço para novos disjuntores",
+      "DR e DPS instalados",
+      "Aterramento presente nas tomadas",
+      "Fio neutro presente nas caixas dos interruptores",
+      "Caixas de embutir com espaço suficiente",
+      "Circuitos dedicados (chuveiro, ar-condicionado)",
+      "Bitolas e disjuntores compatíveis com as cargas"]},
+    {t:"Rede e internet", k:"re", it:[
+      "Roteador em local central e ventilado",
+      "Rede Wi-Fi de 2,4 GHz disponível",
+      "Sinal adequado nos pontos de instalação (dBm medido)",
+      "Velocidade contratada suficiente (câmeras exigem upload)",
+      "Acesso ao roteador e senha com o cliente"]},
+    {t:"O que será automatizado", k:"eq", it:[
+      "Pontos de iluminação e interruptores paralelos identificados",
+      "Ar-condicionado com controle por infravermelho",
+      "TV e outros aparelhos controláveis",
+      "Pontos para câmeras e sensores definidos",
+      "Cortinas, portão ou fechaduras (se houver)"]},
+    {t:"Cliente e obra", k:"cl", it:[
+      "Cômodos e prioridades definidos com o cliente",
+      "Orçamento disponível alinhado com o cliente",
+      "Imóvel próprio ou alugado (instalação reversível)",
+      "Fotos do quadro e dos pontos tiradas",
+      "Prazo e horário de instalação combinados"]}
+  ];
+  var ST = [["","—"],["ok","OK"],["att","Atenção"],["na","N/A"]];
+  var UN = [["un","un"],["m","m"],["rolo","rolo"],["cx","cx"],["pç","pç"],["kit","kit"],["h","hora"],["serv","serviço"]];
+  var CO_KEYS = [["nome","Empresa"],["doc","CNPJ/CPF"],["crea","CREA"],["tel","Telefone"],["mail","E-mail"],["end","Endereço"]];
+  var ql = [], prods = [], pedit = null;
+
+  function m2(v){ return Number(v).toLocaleString("pt-BR",{style:"currency",currency:"BRL"}); }
+  function hoje(){ return new Date().toLocaleDateString("pt-BR"); }
+  function plabel(p){ return p.nome + (p.codigo ? " (" + p.codigo + ")" : "") + " · " + m2(p.preco); }
+
+  // ----- checklist -----
+  function vget(){ var m = {}; $("pane-visit").querySelectorAll("[data-v]").forEach(function(el){ m[el.getAttribute("data-v")] = el.value; }); return m; }
+  function vsave(){ try{ localStorage.setItem("mkp_visita", JSON.stringify(vget())); }catch(e){} }
+  function vrestore(){
+    var m = {}; try{ m = JSON.parse(localStorage.getItem("mkp_visita") || "{}"); }catch(e){}
+    $("pane-visit").querySelectorAll("[data-v]").forEach(function(el){ var k = el.getAttribute("data-v"); if(m[k] != null) el.value = m[k]; });
+  }
+  function vText(){
+    var m = vget(), att = [], body = "", pend = 0, tag = {ok:"[OK]", att:"[ATENÇÃO]", na:"[N/A]"};
+    CHK.forEach(function(s){
+      var lines = [];
+      s.it.forEach(function(t,i){
+        var st = m["s-" + s.k + i] || "";
+        if(!st){ pend++; return; }
+        lines.push(tag[st] + " " + t);
+        if(st === "att") att.push(s.t + ": " + t);
+      });
+      var o = (m["o-" + s.k] || "").trim(); if(o) lines.push("Obs.: " + o);
+      if(lines.length) body += "\n" + s.t.toUpperCase() + "\n" + lines.join("\n") + "\n";
+    });
+    return "VISITA TÉCNICA · " + coGet().nome + "\nCliente: " + (m.cli || "—") + "\nEndereço: " + (m.end || "—") + "\nData: " + hoje() + "\n"
+      + (att.length ? "\nPONTOS DE ATENÇÃO\n- " + att.join("\n- ") + "\n" : "\nNenhum ponto de atenção marcado.\n") + body + (pend ? "\nItens não verificados: " + pend + "\n" : "");
+  }
+  function renderVisit(){
+    var h = '<p class="sub" style="margin-bottom:10px">Use durante a visita. O checklist fica salvo só neste aparelho.</p><div class="tf">' + fld("v-cli","Cliente",'<input id="v-cli" data-v="cli">') + fld("v-end","Endereço",'<input id="v-end" data-v="end">') + '</div>';
+    CHK.forEach(function(s){
+      h += '<h3 style="margin:14px 0 4px">' + s.t + '</h3>';
+      s.it.forEach(function(t,i){
+        var key = "s-" + s.k + i;
+        h += '<div class="chkrow"><span>' + esc(t) + '</span>' + sel(key,ST,"").replace("<select ", '<select data-v="' + key + '" aria-label="' + esc(t) + '" ') + '</div>';
+      });
+      h += '<input data-v="o-' + s.k + '" placeholder="Observações desta seção" aria-label="Observações: ' + esc(s.t) + '">';
+    });
+    h += '<pre class="res" id="v-out"></pre><div class="cta2"><button class="mini" type="button" id="v-copy">Copiar resumo</button><button class="mini" type="button" id="v-print">Imprimir / PDF</button><button class="mini" type="button" id="v-clr">Limpar checklist</button></div><p class="amsg" id="v-msg" aria-live="polite"></p>';
+    $("pane-visit").innerHTML = h; vrestore(); $("v-out").textContent = vText();
+  }
+  async function copyText(t, el){
+    try{ await navigator.clipboard.writeText(t); el.textContent = "Copiado!"; }
+    catch(e){ el.textContent = "Não consegui copiar. Selecione o texto e copie."; }
+  }
+  function printHtml(html, el){
+    var w = window.open("", "_blank");
+    if(!w){ el.textContent = "O navegador bloqueou a janela. Permita pop-ups e tente de novo."; return; }
+    w.document.write(html); w.document.close(); w.focus(); setTimeout(function(){ w.print(); }, 300);
+  }
+  function textDoc(title, text){ return '<!doctype html><meta charset="utf-8"><title>' + esc(title) + '</title><style>body{font:15px/1.6 Arial,sans-serif;max-width:720px;margin:24px auto;padding:0 16px;color:#111}pre{white-space:pre-wrap;font:inherit}</style><pre>' + esc(text) + '</pre>'; }
+  var pv = $("pane-visit");
+  function vRefresh(){ vsave(); $("v-out").textContent = vText(); }
+  pv.addEventListener("input", vRefresh);
+  pv.addEventListener("change", vRefresh);
+  pv.addEventListener("click", function(e){
+    var t = e.target.closest("button"); if(!t) return;
+    if(t.id === "v-copy") copyText(vText(), $("v-msg"));
+    else if(t.id === "v-print") printHtml(textDoc("Visita técnica", vText()), $("v-msg"));
+    else if(t.id === "v-clr"){ pv.querySelectorAll("[data-v]").forEach(function(el){ el.value = ""; }); vRefresh(); }
+  });
+
+  // ----- catálogo de produtos -----
+  function pval(id){ return $(id).value.trim(); }
+  function pCalc(){
+    var c = $("p-custo").value, p = Number($("p-preco").value), el = $("p-calc");
+    if(c === "" || !(p > 0)){ el.textContent = "Margem: informe o custo e o preço de venda."; return; }
+    var cu = Number(c);
+    el.innerHTML = 'Margem bruta <b>' + fmt((p - cu) / p * 100) + ' %</b> · markup <b>' + fmt(cu > 0 ? (p - cu) / cu * 100 : 0) + ' %</b> · lucro por unidade <b>' + m2(p - cu) + '</b>';
+  }
+  function clearProdForm(){
+    ["p-cod","p-nome","p-cat","p-marca","p-custo","p-preco","p-forn","p-obs"].forEach(function(id){ $(id).value = ""; });
+    $("p-un").value = "un"; pedit = null; $("p-cancel").hidden = true; $("p-title").textContent = "Cadastrar produto"; pCalc();
+  }
+  function editProd(id){
+    var p = prods.filter(function(x){ return String(x.id) === String(id); })[0]; if(!p) return;
+    pedit = p.id;
+    $("p-cod").value = p.codigo || ""; $("p-nome").value = p.nome || ""; $("p-cat").value = p.categoria || ""; $("p-marca").value = p.marca || "";
+    $("p-un").value = p.unidade || "un"; $("p-custo").value = p.custo == null ? "" : p.custo; $("p-preco").value = p.preco == null ? "" : p.preco;
+    $("p-forn").value = p.fornecedor || ""; $("p-obs").value = p.obs || "";
+    $("p-cancel").hidden = false; $("p-title").textContent = "Editar produto"; pCalc(); $("p-nome").focus();
+  }
+  function renderProdList(){
+    if(!$("p-list")) return;
+    var cats = Array.from(new Set(prods.map(function(p){ return p.categoria; }).filter(Boolean))).sort(), f = $("p-f"), cur = f.value;
+    f.innerHTML = '<option value="">Todas</option>' + cats.map(function(c){ return '<option value="'+esc(c)+'">'+esc(c)+'</option>'; }).join(""); f.value = cur;
+    $("p-cats").innerHTML = cats.map(function(c){ return '<option value="'+esc(c)+'">'; }).join("");
+    var q = $("p-q").value.toLowerCase(), cf = f.value;
+    var list = prods.filter(function(p){ return (!cf || p.categoria === cf) && (!q || [p.nome, p.codigo, p.marca, p.categoria, p.fornecedor].join(" ").toLowerCase().indexOf(q) >= 0); });
+    $("p-count").textContent = list.length + " de " + prods.length + " produtos";
+    $("p-list").innerHTML = list.length ? list.map(function(p){
+      var extra = [p.categoria, p.marca, p.fornecedor].filter(Boolean).join(" · ");
+      if(p.custo != null && Number(p.preco) > 0) extra += (extra ? " · " : "") + "custo " + m2(p.custo) + " · margem " + fmt((p.preco - p.custo) / p.preco * 100) + "%";
+      return '<div class="prow"><span class="pc">' + esc(p.codigo || "") + '</span><span class="pn"><b>' + esc(p.nome) + '</b><small>' + esc(extra) + '</small></span><span class="pu">' + esc(p.unidade || "un") + '</span><span class="pp">' + m2(p.preco) + '</span>'
+        + '<button class="mini" type="button" data-pe="' + esc(p.id) + '">Editar</button><button class="mini" type="button" data-pd="' + esc(p.id) + '" aria-label="Excluir">✕</button></div>';
+    }).join("") : '<p class="sub">Nenhum produto encontrado.</p>';
+  }
+  function refreshDatalist(){ var dl = $("q-dl"); if(dl) dl.innerHTML = prods.map(function(p){ return '<option value="' + esc(plabel(p)) + '">'; }).join(""); }
+  async function loadProds(){
+    if(!sb) return;
+    var r = await sb.from("produtos").select("*").order("nome");
+    if(r.error){ $("p-err").textContent = "Não consegui carregar os produtos: " + r.error.message + ". Se a tabela ainda não existe, rode o arquivo supabase-produtos.sql no Supabase."; return; }
+    $("p-err").textContent = ""; prods = r.data || []; renderProdList(); refreshDatalist();
+  }
+  async function saveProd(){
+    var m = $("p-msg"), nome = pval("p-nome"), raw = $("p-preco").value, preco = Number(raw);
+    if(!nome || raw === "" || !(preco >= 0)){ m.textContent = "Preencha o nome e o preço de venda."; return; }
+    var row = {codigo:pval("p-cod") || null, nome:nome, categoria:pval("p-cat") || null, marca:pval("p-marca") || null, unidade:$("p-un").value,
+      custo:$("p-custo").value === "" ? null : Number($("p-custo").value), preco:preco, fornecedor:pval("p-forn") || null, obs:pval("p-obs") || null};
+    m.textContent = "Salvando…";
+    var r = pedit ? await sb.from("produtos").update(row).eq("id", pedit) : await sb.from("produtos").insert(row);
+    if(r.error){ m.textContent = "Não consegui salvar: " + r.error.message; return; }
+    clearProdForm(); m.textContent = "Produto salvo."; await loadProds();
+  }
+  function renderProd(){
+    $("pane-prod").innerHTML = '<p class="sub" style="margin-bottom:10px">Catálogo para consulta e para montar orçamentos. Só você vê esta lista: custos e fornecedores não aparecem para os visitantes do site.</p><p class="amsg" id="p-err"></p>'
+      + '<details open><summary id="p-title">Cadastrar produto</summary><div class="tf">'
+      + fld("p-cod","Código",'<input id="p-cod">') + fld("p-nome","Nome do produto *",'<input id="p-nome">')
+      + fld("p-cat","Categoria",'<input id="p-cat" list="p-cats"><datalist id="p-cats"></datalist>') + fld("p-marca","Marca",'<input id="p-marca">')
+      + fld("p-un","Unidade",sel("p-un",UN,"un")) + fld("p-custo","Custo (R$)",num("p-custo","")) + fld("p-preco","Preço de venda (R$) *",num("p-preco",""))
+      + fld("p-forn","Fornecedor",'<input id="p-forn">') + fld("p-obs","Observações",'<input id="p-obs">')
+      + '</div><div class="res" id="p-calc">Margem: informe o custo e o preço de venda.</div>'
+      + '<div class="cta2"><button class="btn primary" type="button" id="p-save" style="padding:10px 20px">Salvar produto</button><button class="mini" type="button" id="p-cancel" hidden>Cancelar edição</button></div><p class="amsg" id="p-msg" aria-live="polite"></p></details>'
+      + '<details open><summary>Produtos cadastrados</summary><div class="tf">' + fld("p-q","Buscar",'<input id="p-q" placeholder="nome, código, marca…">') + fld("p-f","Categoria",'<select id="p-f"></select>')
+      + '</div><div class="cta2"><button class="mini" type="button" id="p-csv">Exportar CSV</button><span class="sub" id="p-count" style="align-self:center;font-size:.85rem"></span></div><div id="p-list"></div></details>';
+    renderProdList();
+  }
+  var pp = $("pane-prod");
+  pp.addEventListener("input", function(e){ if(e.target.id === "p-custo" || e.target.id === "p-preco") pCalc(); if(e.target.id === "p-q") renderProdList(); });
+  pp.addEventListener("change", function(e){ if(e.target.id === "p-f") renderProdList(); });
+  pp.addEventListener("click", async function(e){
+    var b = e.target.closest("button"); if(!b) return;
+    var ed = b.getAttribute("data-pe"), dl = b.getAttribute("data-pd");
+    if(ed !== null) editProd(ed);
+    else if(dl !== null){
+      var p = prods.filter(function(x){ return String(x.id) === dl; })[0];
+      if(p && window.confirm("Excluir " + p.nome + " do catálogo?")){
+        var r = await sb.from("produtos").delete().eq("id", dl);
+        if(r.error) $("p-err").textContent = "Não consegui excluir: " + r.error.message; else await loadProds();
+      }
+    }
+    else if(b.id === "p-save") saveProd();
+    else if(b.id === "p-cancel") clearProdForm();
+    else if(b.id === "p-csv"){
+      var head = ["codigo","nome","categoria","marca","unidade","custo","preco","fornecedor","obs"];
+      download("produtos-mkp.csv", [head.join(";")].concat(prods.map(function(p){ return head.map(function(k){ return csvCell(p[k]); }).join(";"); })).join("\r\n"));
+    }
+  });
+
+  // ----- orçamento -----
+  function coGet(){
+    var m = {nome:"MKP Engenharia", doc:"", crea:"", tel:"(41) 98437-4840", mail:"", end:""};
+    try{ var s = JSON.parse(localStorage.getItem("mkp_empresa") || "{}"); for(var k in s) m[k] = s[k]; }catch(e){}
+    return m;
+  }
+  function coSave(){
+    var m = {}; $("pane-quote").querySelectorAll("[data-co]").forEach(function(el){ m[el.getAttribute("data-co")] = el.value; });
+    try{ localStorage.setItem("mkp_empresa", JSON.stringify(m)); }catch(e){}
+  }
+  function qv(id){ return $(id).value.trim(); }
+  function qMeta(){ return {num:qv("q-num"), val:nv("q-val") || 7, cli:qv("q-cli"), doc:qv("q-doc"), tel:qv("q-tel"), end:qv("q-end"), pag:qv("q-pag"), prz:qv("q-prz"), gar:qv("q-gar"), obs:qv("q-obs")}; }
+  function qCalc(){
+    var lines = ql.filter(function(r){ return String(r.d).trim(); }), sub = 0;
+    lines = lines.map(function(r){ var q = Number(r.q) || 0, p = Number(r.p) || 0, t = q * p; sub += t; return {d:String(r.d).trim(), u:r.u || "un", q:q, p:p, t:t}; });
+    var disc = Math.min(100, nv("q-disc")), dv = sub * disc / 100;
+    return {lines:lines, sub:sub, disc:disc, dv:dv, total:sub - dv};
+  }
+  function qText(){
+    var c = coGet(), m = qMeta(), t = qCalc();
+    var ls = t.lines.map(function(r,i){ return (i + 1) + ". " + fmt(r.q) + " " + r.u + " · " + r.d + " — " + m2(r.t); });
+    return "ORÇAMENTO Nº " + m.num + " · " + c.nome + "\nData: " + hoje() + " · Validade: " + m.val + " dias\nCliente: " + (m.cli || "—") + (m.end ? "\nLocal: " + m.end : "")
+      + "\n\nITENS\n" + (ls.join("\n") || "(sem itens)") + "\n\nSubtotal: " + m2(t.sub) + (t.disc ? "\nDesconto (" + fmt(t.disc) + "%): -" + m2(t.dv) : "") + "\nTOTAL: " + m2(t.total)
+      + (m.pag ? "\n\nPagamento: " + m.pag : "") + (m.prz ? "\nPrazo de execução: " + m.prz : "") + (m.gar ? "\nGarantia: " + m.gar : "") + (m.obs ? "\n\n" + m.obs : "");
+  }
+  var QCSS = '@page{size:A4;margin:14mm}*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}body{font:13px/1.5 Arial,Helvetica,sans-serif;color:#1b2430;margin:0}'
+    + '.hd{display:flex;justify-content:space-between;gap:20px;border-bottom:4px solid #ffc928;padding-bottom:12px;margin-bottom:16px}.hd h1{margin:0 0 2px;font-size:22px;color:#14213a}.hd small{display:block;color:#566a80}'
+    + '.doc{text-align:right}.doc b{display:block;font-size:17px;color:#14213a}.box{border:1px solid #d3dbe6;border-radius:6px;padding:10px 12px;margin-bottom:12px}'
+    + '.box h3{margin:0 0 4px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#566a80}table{width:100%;border-collapse:collapse;margin:8px 0}'
+    + 'th{background:#14213a;color:#fff;text-align:left;padding:7px 8px;font-size:12px}td{padding:7px 8px;border-bottom:1px solid #e3e9f1}tr:nth-child(even) td{background:#f6f8fb}'
+    + '.n{text-align:right;white-space:nowrap}.tot{margin-left:auto;width:280px}.tot div{display:flex;justify-content:space-between;padding:4px 0}'
+    + '.tot .g{border-top:2px solid #14213a;font-size:16px;font-weight:bold;margin-top:4px;padding-top:8px}.sig{display:flex;gap:40px;margin-top:56px}'
+    + '.sig div{flex:1;border-top:1px solid #1b2430;text-align:center;padding-top:6px;font-size:12px}.ft{margin-top:18px;color:#7a8898;font-size:11px;text-align:center}';
+  function qHtml(){
+    var c = coGet(), m = qMeta(), t = qCalc();
+    function ln(a){ return a.filter(Boolean).join(" · "); }
+    var rows = t.lines.map(function(r,i){ return '<tr><td>' + (i + 1) + '</td><td>' + esc(r.d) + '</td><td>' + esc(r.u) + '</td><td class="n">' + fmt(r.q) + '</td><td class="n">' + m2(r.p) + '</td><td class="n">' + m2(r.t) + '</td></tr>'; }).join("") || '<tr><td colspan="6">Sem itens.</td></tr>';
+    var cond = [["Pagamento", m.pag], ["Prazo de execução", m.prz], ["Garantia", m.gar]].filter(function(x){ return x[1]; }).map(function(x){ return '<div><b>' + x[0] + ':</b> ' + esc(x[1]) + '</div>'; }).join("");
+    var head = [ln([c.doc && "CNPJ/CPF " + c.doc, c.crea && "CREA " + c.crea]), ln([c.tel, c.mail]), c.end].filter(Boolean).map(function(x){ return '<small>' + esc(x) + '</small>'; }).join("");
+    var cli = ln([m.doc, m.tel]);
+    return '<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>Orçamento ' + esc(m.num) + '</title><style>' + QCSS + '</style><body>'
+      + '<div class="hd"><div><h1>' + esc(c.nome) + '</h1>' + head + '</div><div class="doc"><b>ORÇAMENTO Nº ' + esc(m.num) + '</b><small>Data: ' + hoje() + '</small><small>Validade: ' + m.val + ' dias</small></div></div>'
+      + '<div class="box"><h3>Cliente</h3><b>' + esc(m.cli || "—") + '</b>' + (cli ? '<br>' + esc(cli) : "") + (m.end ? '<br>Local: ' + esc(m.end) : "") + '</div>'
+      + '<table><thead><tr><th>#</th><th>Descrição</th><th>Un.</th><th class="n">Qtd.</th><th class="n">Valor unit.</th><th class="n">Total</th></tr></thead><tbody>' + rows + '</tbody></table>'
+      + '<div class="tot"><div><span>Subtotal</span><span>' + m2(t.sub) + '</span></div>' + (t.disc ? '<div><span>Desconto (' + fmt(t.disc) + '%)</span><span>-' + m2(t.dv) + '</span></div>' : '') + '<div class="g"><span>TOTAL</span><span>' + m2(t.total) + '</span></div></div>'
+      + (cond ? '<div class="box" style="margin-top:14px"><h3>Condições</h3>' + cond + '</div>' : '') + (m.obs ? '<div class="box"><h3>Observações</h3>' + esc(m.obs) + '</div>' : '')
+      + '<div class="sig"><div>Contratante<br>' + esc(m.cli) + '</div><div>' + esc(c.nome) + '<br>' + (c.crea ? 'CREA ' + esc(c.crea) : 'Responsável técnico') + '</div></div><div class="ft">Orçamento gerado em ' + hoje() + '</div></body></html>';
+  }
+  function qRows(){
+    return ql.map(function(r,i){
+      return '<div class="arow q"><input data-qi="'+i+'" data-qf="d" value="'+esc(r.d)+'" aria-label="Descrição"><input data-qi="'+i+'" data-qf="u" value="'+esc(r.u)+'" aria-label="Unidade">'
+        + '<input data-qi="'+i+'" data-qf="q" type="number" min="0" step="any" value="'+r.q+'" aria-label="Quantidade"><input data-qi="'+i+'" data-qf="p" type="number" min="0" step="any" value="'+r.p+'" aria-label="Valor unitário">'
+        + '<button class="mini" type="button" data-qdel="'+i+'" aria-label="Remover">✕</button></div>';
+    }).join("");
+  }
+  function qRefresh(){
+    var t = qCalc();
+    $("q-sum").innerHTML = 'Subtotal <b>' + m2(t.sub) + '</b>' + (t.disc ? ' · Desconto <b>-' + m2(t.dv) + '</b>' : '') + ' · Total <b>' + m2(t.total) + '</b>';
+  }
+  function qRender(){
+    $("q-rows").innerHTML = ql.length
+      ? '<div class="arow q" style="color:var(--muted);font-size:.82rem"><span>Descrição</span><span>Un.</span><span>Qtd.</span><span>Valor unit. (R$)</span><span></span></div>' + qRows()
+      : '<p class="sub" style="font-size:.88rem">Nenhum item ainda. Adicione do catálogo, carregue o kit ou crie uma linha.</p>';
+    qRefresh();
+  }
+  function renderQuote(){
+    var c = coGet(), d = new Date();
+    function pad(n){ return String(n).padStart(2, "0"); }
+    var numq = "ORC-" + String(d.getFullYear()).slice(2) + pad(d.getMonth() + 1) + pad(d.getDate()) + "-" + pad(d.getHours()) + pad(d.getMinutes());
+    $("pane-quote").innerHTML =
+      '<details><summary>Dados da empresa (saem no cabeçalho do orçamento)</summary><div class="tf">'
+      + CO_KEYS.map(function(k){ return fld("co-" + k[0], k[1], '<input id="co-' + k[0] + '" data-co="' + k[0] + '" value="' + esc(c[k[0]]) + '">'); }).join("")
+      + '</div><p class="sub" style="font-size:.82rem;margin-top:6px">Ficam salvos só neste aparelho.</p></details>'
+      + '<details open><summary>Novo orçamento</summary><div class="tf">'
+      + fld("q-num","Nº do orçamento",'<input id="q-num" value="' + numq + '">') + fld("q-val","Validade (dias)",num("q-val",7)) + fld("q-cli","Cliente",'<input id="q-cli">')
+      + fld("q-doc","CPF/CNPJ do cliente",'<input id="q-doc">') + fld("q-tel","WhatsApp do cliente",'<input id="q-tel" type="tel" placeholder="(41) 90000-0000">') + fld("q-end","Endereço do local",'<input id="q-end">')
+      + '</div><div id="q-rows" style="margin-top:12px"></div>'
+      + '<div class="tf" style="align-items:end;margin-top:10px">' + fld("q-prod","Adicionar do catálogo",'<input id="q-prod" list="q-dl" placeholder="digite para buscar"><datalist id="q-dl"></datalist>')
+      + '<div><button class="mini" type="button" id="q-padd">Adicionar</button></div></div>'
+      + '<div class="cta2"><button class="mini" type="button" id="q-kit">Carregar itens do kit</button><button class="mini" type="button" id="q-add">+ Linha livre</button></div>'
+      + '<div class="tf" style="margin-top:12px">' + fld("q-disc","Desconto (%)",num("q-disc",0,'max="100"')) + fld("q-pag","Condições de pagamento",'<input id="q-pag" value="À vista (PIX) ou conforme combinado">')
+      + fld("q-prz","Prazo de execução",'<input id="q-prz" placeholder="ex.: 2 dias úteis">') + fld("q-gar","Garantia",'<input id="q-gar" placeholder="ex.: 90 dias sobre os serviços">')
+      + fld("q-obs","Observações",'<input id="q-obs" value="Valores sujeitos à confirmação em visita técnica.">') + '</div>'
+      + '<div class="res" id="q-sum"></div><div class="cta2"><button class="btn primary" type="button" id="q-print" style="padding:10px 20px">Visualizar / Imprimir PDF</button><button class="mini" type="button" id="q-copy">Copiar texto</button><button class="mini" type="button" id="q-wa">Enviar por WhatsApp</button></div>'
+      + '<p class="amsg" id="q-msg" aria-live="polite"></p></details>';
+    refreshDatalist(); qRender();
+  }
+  var pq = $("pane-quote");
+  function onQuoteInput(e){
+    var t = e.target, qi = t.getAttribute("data-qi");
+    if(t.getAttribute("data-co") !== null) coSave();
+    if(qi !== null){ var f = t.getAttribute("data-qf"); ql[Number(qi)][f] = (f === "d" || f === "u") ? t.value : (Number(t.value) || 0); }
+    qRefresh();
+  }
+  pq.addEventListener("input", onQuoteInput);
+  pq.addEventListener("change", onQuoteInput);
+  pq.addEventListener("click", function(e){
+    var b = e.target.closest("button"); if(!b) return;
+    var id = b.id, qd = b.getAttribute("data-qdel"), msg = $("q-msg");
+    if(qd !== null){ ql.splice(Number(qd), 1); qRender(); }
+    else if(id === "q-add"){ ql.push({d:"", u:"un", q:1, p:0}); qRender(); }
+    else if(id === "q-kit"){ ql = data.kit_items.map(function(it){ return {d:it.n, u:"un", q:1, p:Number(it.p) || 0}; }); qRender(); }
+    else if(id === "q-padd"){
+      var v = qv("q-prod"), p = prods.filter(function(x){ return plabel(x) === v; })[0];
+      if(!p){ msg.textContent = "Escolha um produto da lista que aparece ao digitar."; return; }
+      msg.textContent = ""; ql.push({d:p.nome, u:p.unidade || "un", q:1, p:Number(p.preco) || 0}); $("q-prod").value = ""; qRender();
+    }
+    else if(id === "q-copy") copyText(qText(), msg);
+    else if(id === "q-print") printHtml(qHtml(), msg);
+    else if(id === "q-wa"){
+      var tel = $("q-tel").value.replace(/\D/g, ""); if(tel.length === 10 || tel.length === 11) tel = "55" + tel;
+      window.open("https://wa.me/" + (tel.length >= 12 ? tel : "") + "?text=" + encodeURIComponent(qText()), "_blank", "noopener");
+    }
+  });
+  renderVisit(); renderProd(); renderQuote();
+
+  // ---------- CLP / IHM / SCADA ----------
+  var DEFTAGS = [
+    {t:"TQ01_Nivel", d:"Nível do tanque 01", k:"AI", a:"Modbus 40001", u:"%", mn:"0", mx:"100", al:"10", ah:"90", tp:"planta/tq01/nivel"},
+    {t:"P01_Pressao", d:"Pressão da linha", k:"AI", a:"Modbus 40002", u:"bar", mn:"0", mx:"10", al:"", ah:"8", tp:"planta/p01/pressao"},
+    {t:"T01_Temp", d:"Temperatura do processo", k:"AI", a:"Modbus 40003", u:"°C", mn:"0", mx:"150", al:"", ah:"100", tp:"planta/t01/temp"},
+    {t:"B01_Run", d:"Bomba B01 em operação", k:"DI", a:"Modbus 10001", u:"", mn:"0", mx:"1", al:"", ah:"", tp:"planta/b01/run"},
+    {t:"B01_Cmd", d:"Comando da bomba B01", k:"DO", a:"Modbus 00001", u:"", mn:"0", mx:"1", al:"", ah:"", tp:"planta/b01/cmd"}
+  ];
+  var TT = [["AI","AI · entrada analógica"],["AO","AO · saída analógica"],["DI","DI · entrada digital"],["DO","DO · saída digital"],["MEM","Interna"]];
+  var CSVH = ["tag","descricao","tipo","endereco","unidade","min","max","alarme_baixo","alarme_alto","topico_mqtt"];
+  var CSVK = ["t","d","k","a","u","mn","mx","al","ah","tp"];
+  var MBT = {hr:["Holding register (4x) · funções 03, 06 e 16", 40000, 400000], ir:["Input register (3x) · função 04", 30000, 300000], di:["Discrete input (1x) · função 02", 10000, 100000], co:["Coil (0x) · funções 01, 05 e 15", 0, 0]};
+  var tags = loadTags(), mq = null, demo = null, cmdOn = false, live = {}, alarms = {}, evlog = [];
+
+  function loadTags(){ try{ var s = JSON.parse(localStorage.getItem("mkp_tags") || "null"); if(Array.isArray(s)) return s; }catch(e){} return clone(DEFTAGS); }
+  function saveTags(){ try{ localStorage.setItem("mkp_tags", JSON.stringify(tags)); }catch(e){} }
+  function ni(id,v,x){ return '<input id="'+id+'" type="number" step="any" value="'+v+'" '+(x||"")+'>'; }
+  function pn(s){ s = String(s).trim(); if(!s) return NaN; return /^0x/i.test(s) ? parseInt(s,16) : Number(s); }
+  function hex(n,d){ var s = n.toString(16).toUpperCase(); while(s.length < d) s = "0" + s; return s; }
+  function fmtf(n){ return Number(n).toLocaleString("pt-BR",{maximumSignificantDigits:7}); }
+  function csvCell(v){ return String(v == null ? "" : v).replace(/[;\r\n"]/g, " "); }
+  function download(name, text){
+    var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["\ufeff" + text], {type:"text/csv;charset=utf-8"}));
+    a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  }
+  function tagsCsv(){ return [CSVH.join(";")].concat(tags.map(function(t){ return CSVK.map(function(k){ return csvCell(t[k]); }).join(";"); })).join("\r\n"); }
+  function importCsv(text){
+    var lines = text.replace(/^\ufeff/, "").split(/\r?\n/).filter(function(l){ return l.trim(); });
+    if(lines.length < 2) return 0;
+    var sep = lines[0].indexOf(";") >= 0 ? ";" : ",", out = [];
+    for(var i = 1; i < lines.length; i++){
+      var c = lines[i].split(sep), o = {};
+      CSVK.forEach(function(k,j){ o[k] = (c[j] || "").trim(); });
+      if(!o.t) continue;
+      if(!TT.some(function(a){ return a[0] === o.k; })) o.k = "MEM";
+      out.push(o);
+    }
+    tags = out; saveTags(); return out.length;
+  }
+
+  // ----- tags -----
+  function tagCard(t,i){
+    function f(k,ph){ return '<input data-ti="'+i+'" data-tf="'+k+'" value="'+esc(t[k])+'" placeholder="'+ph+'" aria-label="'+ph+'">'; }
+    return '<div class="tagcard"><div class="tg">' + f("t","Tag") + f("d","Descrição")
+      + '<select data-ti="'+i+'" data-tf="k" aria-label="Tipo">' + TT.map(function(a){ return '<option value="'+a[0]+'"'+(a[0]===t.k?" selected":"")+'>'+a[1]+'</option>'; }).join("") + '</select>'
+      + f("a","Endereço (Modbus, OPC UA…)") + f("u","Unidade") + f("mn","Mín.") + f("mx","Máx.") + f("al","Alarme baixo") + f("ah","Alarme alto") + f("tp","Tópico MQTT")
+      + '<button class="mini" type="button" data-tdel="'+i+'">Remover</button></div></div>';
+  }
+  function renderTagList(){ $("tg-list").innerHTML = tags.length ? tags.map(tagCard).join("") : '<p class="sub">Nenhuma tag cadastrada.</p>'; }
+
+  // ----- calculadoras -----
+  function calcMa(){
+    var mn = nv("cs-mn"), mx = nv("cs-mx"), c0 = nv("cs-c0"), c1 = nv("cs-c1"), raw = $("cs-v").value, v = Number(raw), m = $("cs-m").value, out = $("cs-out");
+    if(raw === "" || mx === mn || c1 === c0){ out.textContent = "Preencha a faixa e o valor de entrada."; return; }
+    var pct = m === "ma" ? (v - 4) / 16 : (m === "eng" ? (v - mn) / (mx - mn) : (v - c0) / (c1 - c0)), ma = 4 + 16 * pct;
+    var w = ma < 3.6 ? "Falha: abaixo de 3,6 mA (fio rompido ou sensor com defeito)." : ma < 3.8 ? "Fora da faixa válida (NAMUR NE43: 3,8 a 20,5 mA)."
+      : ma > 21 ? "Falha: acima de 21 mA." : ma > 20.5 ? "Fora da faixa válida (NAMUR NE43: 3,8 a 20,5 mA)." : "";
+    out.innerHTML = 'Corrente <b>' + fmt(ma) + ' mA</b> · ' + fmt(pct * 100) + ' %<br>Valor de engenharia <b>' + fmt(mn + pct * (mx - mn)) + '</b><br>Contagem do módulo <b>' + fmt(Math.round(c0 + pct * (c1 - c0))) + '</b>'
+      + (w ? '<br><b style="color:var(--warn)">' + w + '</b>' : '');
+  }
+  function calcReg(){
+    var r1 = pn($("cr-1").value), r2 = pn($("cr-2").value), o = $("cr-o").value, out = $("cr-out");
+    function ok(n){ return n >= 0 && n <= 65535 && Math.floor(n) === n; }
+    if(!ok(r1)){ out.textContent = "Informe o registrador 1 (0 a 65535 ou 0xFFFF)."; return; }
+    var h = 'Registrador 1: uint16 <b>' + r1 + '</b> · int16 <b>' + (r1 >= 32768 ? r1 - 65536 : r1) + '</b> · 0x' + hex(r1,4);
+    if(!ok(r2)){ out.innerHTML = h + '<br>Informe o registrador 2 para ler 32 bits.'; return; }
+    var A = r1 >> 8, B = r1 & 255, C = r2 >> 8, D = r2 & 255, dv = new DataView(new ArrayBuffer(4));
+    ({ABCD:[A,B,C,D], CDAB:[C,D,A,B], BADC:[B,A,D,C], DCBA:[D,C,B,A]})[o].forEach(function(b,i){ dv.setUint8(i,b); });
+    out.innerHTML = h + '<br>32 bits (' + o + '): float32 <b>' + fmtf(dv.getFloat32(0)) + '</b> · uint32 <b>' + dv.getUint32(0) + '</b> · int32 <b>' + dv.getInt32(0) + '</b> · 0x' + hex(dv.getUint32(0),8);
+  }
+  function calcAddr(){
+    var out = $("ca-out"), raw = $("ca-n").value, n = Number(raw), ty = "", o = 0, h = "";
+    if(raw !== ""){
+      if(n >= 400001 && n <= 465536){ ty = "hr"; o = n - 400001; } else if(n >= 300001 && n <= 365536){ ty = "ir"; o = n - 300001; }
+      else if(n >= 100001 && n <= 165536){ ty = "di"; o = n - 100001; } else if(n >= 40001 && n <= 49999){ ty = "hr"; o = n - 40001; }
+      else if(n >= 30001 && n <= 39999){ ty = "ir"; o = n - 30001; } else if(n >= 10001 && n <= 19999){ ty = "di"; o = n - 10001; }
+      else if(n >= 1 && n <= 9999){ ty = "co"; o = n - 1; }
+      h = ty ? 'Notação ' + n + ': <b>' + MBT[ty][0] + '</b><br>Offset no protocolo (base 0): <b>' + o + '</b> (0x' + hex(o,4) + ')' : 'Notação fora das faixas conhecidas.';
+      h += '<br>';
+    }
+    var t = $("ca-t").value, off = Number($("ca-o").value) || 0, b = MBT[t];
+    h += 'Offset ' + off + ' · ' + b[0] + ': 5 dígitos <b>' + (off > 9998 ? 'n/d' : String(b[1] + off + 1).padStart(5, "0")) + '</b> · 6 dígitos <b>' + String(b[2] + off + 1).padStart(6, "0") + '</b>';
+    out.innerHTML = h + '<br><small>Alguns CLPs e gateways contam a partir de 1 e outros a partir de 0. Confira o manual do equipamento.</small>';
+  }
+  function calcCrc(){
+    var s = $("cc-i").value.replace(/0x/gi, "").replace(/[^0-9a-f]/gi, ""), out = $("cc-out");
+    if(!s || s.length % 2){ out.textContent = "Digite os bytes em hexadecimal (ex.: 01 03 00 00 00 0A)."; return; }
+    var crc = 0xFFFF, bytes = s.match(/../g).map(function(x){ return parseInt(x,16); });
+    bytes.forEach(function(b){ crc ^= b; for(var k = 0; k < 8; k++) crc = (crc & 1) ? ((crc >> 1) ^ 0xA001) : (crc >> 1); });
+    var lo = crc & 255, hi = crc >> 8;
+    out.innerHTML = 'CRC16 Modbus RTU: <b>' + hex(lo,2) + ' ' + hex(hi,2) + '</b> (byte baixo primeiro)<br>Quadro completo: ' + bytes.map(function(b){ return hex(b,2); }).join(" ") + ' ' + hex(lo,2) + ' ' + hex(hi,2);
+  }
+  function calcSc(){ calcMa(); calcReg(); calcAddr(); calcCrc(); }
+
+  // ----- supervisório -----
+  function logEv(src, msg){
+    evlog.unshift({t:new Date(), s:src, m:msg}); if(evlog.length > 100) evlog.length = 100;
+    if($("m-log")) $("m-log").innerHTML = evlog.slice(0,30).map(function(e){ return e.t.toLocaleTimeString("pt-BR") + " · <b>" + esc(e.s) + "</b> · " + esc(e.m); }).join("<br>") || "Sem eventos.";
+  }
+  function renderAlarms(){
+    var a = Object.keys(alarms).filter(function(k){ return alarms[k] !== "ok"; });
+    $("m-alm").innerHTML = a.length ? a.map(function(k){ return '<b style="color:var(--warn)">' + esc(k) + '</b>: ' + (alarms[k] === "high" ? "alarme alto" : "alarme baixo"); }).join("<br>") : "Nenhum alarme ativo.";
+  }
+  function lim(v){ return v !== "" && v != null && !isNaN(Number(v)); }
+  function setVal(t, v){
+    var L = live[t.t] || (live[t.t] = {v:null, h:[], ts:0});
+    L.v = v; L.ts = Date.now();
+    if(typeof v === "number"){
+      L.h.push(v); if(L.h.length > 60) L.h.shift();
+      var st = lim(t.ah) && v > Number(t.ah) ? "high" : (lim(t.al) && v < Number(t.al) ? "low" : "ok"), prev = alarms[t.t] || "ok";
+      if(st !== prev){
+        alarms[t.t] = st;
+        logEv(t.t, st === "ok" ? "Voltou ao normal (" + fmt(v) + " " + t.u + ")" : (st === "high" ? "ALARME ALTO: " : "ALARME BAIXO: ") + fmt(v) + " " + t.u);
+        renderAlarms();
+      }
+    }
+    var i = tags.indexOf(t); if(i >= 0) updateCard(i);
+  }
+  function updateCard(i){
+    var t = tags[i], card = $("lc-" + i); if(!card) return;
+    var L = live[t.t], stale = !L || Date.now() - L.ts > 60000, al = alarms[t.t] || "ok";
+    card.className = "lc " + (stale ? "nd" : (al !== "ok" ? "al" : "ok"));
+    if(!L){ $("lv-v-" + i).textContent = "—"; $("lv-s-" + i).textContent = "Sem dados"; return; }
+    var dig = t.k === "DI" || t.k === "DO";
+    $("lv-v-" + i).textContent = typeof L.v === "number" ? (dig ? (L.v ? "LIGADO" : "DESLIGADO") : fmt(L.v) + (t.u ? " " + t.u : "")) : String(L.v);
+    $("lv-s-" + i).textContent = (stale ? "Sem atualização há mais de 60 s" : (al === "high" ? "ALARME ALTO" : (al === "low" ? "ALARME BAIXO" : "Normal"))) + " · " + new Date(L.ts).toLocaleTimeString("pt-BR");
+    var h = L.h, g = $("lv-g-" + i);
+    if(h.length > 1){
+      var mn = Number(t.mn), mx = Number(t.mx);
+      if(!(mx > mn)){ mn = Math.min.apply(null, h); mx = Math.max.apply(null, h); if(mx === mn) mx = mn + 1; }
+      g.setAttribute("points", h.map(function(v,k){ return (k * 100 / (h.length - 1)).toFixed(1) + "," + Math.max(1, Math.min(27, 27 - (v - mn) / (mx - mn) * 26)).toFixed(1); }).join(" "));
+    }
+  }
+  function renderLiveShell(){
+    $("m-live").innerHTML = tags.filter(function(t){ return t.tp; }).length ? tags.map(function(t,i){
+      if(!t.tp) return "";
+      var cmd = cmdOn && (t.k === "DO" || t.k === "AO") ? '<div class="cta2"><input id="lv-c-'+i+'" placeholder="valor" style="max-width:90px" aria-label="Valor do comando"><button class="mini" type="button" data-cmd="'+i+'">Enviar</button></div>' : "";
+      return '<div class="lc nd" id="lc-'+i+'"><small>' + esc(t.t) + (t.d ? " · " + esc(t.d) : "") + '</small><b class="v" id="lv-v-'+i+'">—</b><svg viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true"><polyline id="lv-g-'+i+'" points=""/></svg><small id="lv-s-'+i+'">Sem dados</small>' + cmd + '</div>';
+    }).join("") : '<p class="sub">Cadastre tags com tópico MQTT para vê-las aqui.</p>';
+    tags.forEach(function(t,i){ if(live[t.t]) updateCard(i); });
+  }
+  function loadMqtt(){
+    return new Promise(function(ok, err){
+      if(window.mqtt) return ok(window.mqtt);
+      var s = document.createElement("script"); s.src = "https://cdn.jsdelivr.net/npm/mqtt@5.3.4/dist/mqtt.min.js";
+      s.onload = function(){ ok(window.mqtt); }; s.onerror = function(){ err(new Error("Não consegui carregar a biblioteca MQTT.")); };
+      document.head.appendChild(s);
+    });
+  }
+  function parsePayload(s){
+    s = s.trim();
+    try{ if(s.charAt(0) === "{"){ var o = JSON.parse(s), v = o.value != null ? o.value : o.v; if(v != null) s = String(v); } }catch(e){}
+    if(/^(true|on)$/i.test(s)) return 1; if(/^(false|off)$/i.test(s)) return 0;
+    var n = Number(s); return s !== "" && !isNaN(n) ? n : s;
+  }
+  function topics(){ return tags.filter(function(t){ return t.tp; }).map(function(t){ return t.tp; }); }
+  function stopDemo(){ if(demo){ clearInterval(demo); demo = null; $("m-demo").textContent = "Modo demonstração"; } }
+  function mqttDisconnect(silent){
+    if(mq){ var c = mq; mq = null; try{ c.end(true); }catch(e){} if(!silent){ $("m-st").textContent = "Desconectado."; logEv("Sistema", "Desconectado do broker"); } }
+  }
+  async function mqttConnect(){
+    var st = $("m-st"), url = $("m-url").value.trim();
+    if(!/^wss:\/\//i.test(url) && !/^ws:\/\/(localhost|127\.|192\.168\.|10\.)/i.test(url)){ st.textContent = "Use wss:// (com TLS). ws:// só é aceito em rede local."; return; }
+    try{ localStorage.setItem("mkp_mqtt", JSON.stringify({url:url, usr:$("m-usr").value})); }catch(e){}
+    st.textContent = "Conectando…"; stopDemo();
+    try{
+      var lib = await loadMqtt(); mqttDisconnect(true);
+      mq = lib.connect(url, {username:$("m-usr").value || undefined, password:$("m-pwd").value || undefined, reconnectPeriod:5000, connectTimeout:10000, clean:true});
+      mq.on("connect", function(){ st.textContent = "Conectado a " + url; if(topics().length) mq.subscribe(topics()); logEv("Sistema", "Conectado ao broker"); });
+      mq.on("message", function(topic, payload){ tags.forEach(function(t){ if(t.tp === topic) setVal(t, parsePayload(payload.toString())); }); });
+      mq.on("error", function(e){ st.textContent = "Erro: " + e.message; });
+      mq.on("close", function(){ if(mq) st.textContent = "Sem conexão. Tentando reconectar…"; });
+    }catch(e){ st.textContent = e.message; }
+  }
+  function startDemo(){
+    mqttDisconnect(true); stopDemo();
+    $("m-st").textContent = "Demonstração: valores simulados, sem conexão com equipamentos."; $("m-demo").textContent = "Parar demonstração";
+    logEv("Sistema", "Modo demonstração iniciado");
+    demo = setInterval(function(){
+      tags.forEach(function(t,i){
+        if(!t.tp) return;
+        if(t.k === "AI" || t.k === "AO"){
+          var mn = Number(t.mn) || 0, mx = Number(t.mx) || 100;
+          setVal(t, Math.round(((mn + mx) / 2 + (mx - mn) / 2 * 0.9 * Math.sin(Date.now() / (8000 + i * 2500)) + (Math.random() - .5) * (mx - mn) * 0.02) * 10) / 10);
+        } else setVal(t, Math.sin(Date.now() / (9000 + i * 1000)) > 0 ? 1 : 0);
+      });
+    }, 1000);
+  }
+  function sendCmd(i){
+    var t = tags[i], raw = $("lv-c-" + i).value.trim(), m = $("m-st");
+    if(!cmdOn || raw === "") return;
+    if(demo){ var n = Number(raw); setVal(t, isNaN(n) ? raw : n); logEv(t.t, "Comando simulado: " + raw); return; }
+    if(!mq || !mq.connected){ m.textContent = "Sem conexão com o broker. Comando não enviado."; return; }
+    if(!window.confirm("Enviar " + raw + " para " + t.tp + "/set ?\n\nConfirme que o processo está seguro. Intertravamentos devem estar no CLP.")) return;
+    mq.publish(t.tp + "/set", raw, {qos:1});
+    logEv(t.t, "Comando enviado: " + raw + " → " + t.tp + "/set");
+  }
+
+  function renderScada(){
+    var cfg = {}; try{ cfg = JSON.parse(localStorage.getItem("mkp_mqtt") || "{}"); }catch(e){}
+    $("pane-scada").innerHTML =
+      '<div class="warn"><b>Leia antes de usar.</b> Esta tela serve para supervisão e apoio ao comissionamento. Controle de malha crítica e intertravamentos de segurança ficam no CLP e em dispositivos de segurança dedicados, nunca dependem deste site. O navegador não fala Modbus TCP/RTU nem OPC UA: use um gateway (Node-RED, Ignition, KEPServerEX ou similar) que publique os dados em MQTT sobre WebSocket seguro (wss://). Nunca exponha o CLP direto na internet.</div>'
+    + '<details open><summary>1. Lista de tags (I/O list)</summary><p class="sub" style="font-size:.85rem;margin:8px 0">Fica salva só neste aparelho. Exporte em CSV para guardar ou abrir no Excel. Comandos usam o tópico da tag + <b>/set</b>.</p>'
+    + '<div id="tg-list"></div><div class="cta2"><button class="mini" type="button" id="tg-add">+ Tag</button><button class="mini" type="button" id="tg-exp">Exportar CSV</button><button class="mini" type="button" id="tg-imp">Importar CSV</button><input type="file" id="tg-file" accept=".csv,text/csv" hidden></div><p class="amsg" id="tg-msg" aria-live="polite"></p></details>'
+    + '<details><summary>2. Calculadoras de comissionamento</summary>'
+    + '<h3 style="margin:12px 0 4px">Escala 4–20 mA</h3><div class="tf">' + fld("cs-m","Entrada",sel("cs-m",[["ma","Corrente (mA)"],["eng","Valor de engenharia"],["cnt","Contagem do módulo"]],"ma")) + fld("cs-v","Valor",ni("cs-v",12))
+    + fld("cs-mn","Eng. em 4 mA",ni("cs-mn",0)) + fld("cs-mx","Eng. em 20 mA",ni("cs-mx",100)) + fld("cs-c0","Contagem em 4 mA",ni("cs-c0",5530)) + fld("cs-c1","Contagem em 20 mA",ni("cs-c1",27648))
+    + '</div><div class="res" id="cs-out" aria-live="polite"></div>'
+    + '<h3 style="margin:16px 0 4px">Registradores Modbus para valor</h3><div class="tf">' + fld("cr-1","Registrador 1 (dec ou 0x)",'<input id="cr-1" value="0x3F80">') + fld("cr-2","Registrador 2 (opcional)",'<input id="cr-2" value="0">')
+    + fld("cr-o","Ordem dos bytes",sel("cr-o",[["ABCD","ABCD · big-endian"],["CDAB","CDAB · palavras trocadas"],["BADC","BADC · bytes trocados"],["DCBA","DCBA · little-endian"]],"ABCD")) + '</div><div class="res" id="cr-out" aria-live="polite"></div>'
+    + '<h3 style="margin:16px 0 4px">Endereço Modbus</h3><div class="tf">' + fld("ca-n","Notação (ex.: 40001)",ni("ca-n","",'placeholder="40001"')) + fld("ca-t","Tipo",sel("ca-t",[["hr","Holding register"],["ir","Input register"],["di","Discrete input"],["co","Coil"]],"hr")) + fld("ca-o","Offset (base 0)",ni("ca-o",0,'min="0"'))
+    + '</div><div class="res" id="ca-out" aria-live="polite"></div>'
+    + '<h3 style="margin:16px 0 4px">CRC16 Modbus RTU</h3><div class="tf">' + fld("cc-i","Bytes em hexadecimal",'<input id="cc-i" value="01 03 00 00 00 0A">') + '</div><div class="res" id="cc-out" aria-live="polite"></div></details>'
+    + '<details><summary>3. Supervisório (MQTT)</summary><div class="tf">' + fld("m-url","Broker (wss://…)",'<input id="m-url" placeholder="wss://broker.exemplo.com:8884/mqtt" value="'+esc(cfg.url||"")+'">')
+    + fld("m-usr","Usuário",'<input id="m-usr" autocomplete="off" value="'+esc(cfg.usr||"")+'">') + fld("m-pwd","Senha (não é salva)",'<input id="m-pwd" type="password" autocomplete="off">') + '</div>'
+    + '<div class="cta2"><button class="mini" type="button" id="m-go">Conectar</button><button class="mini" type="button" id="m-stop">Desconectar</button><button class="mini" type="button" id="m-demo">Modo demonstração</button>'
+    + '<label class="chk" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="m-cmd"> permitir comandos</label></div>'
+    + '<p class="amsg" id="m-st" aria-live="polite">Desconectado.</p><h3 style="margin:10px 0 4px">Alarmes ativos</h3><div class="res" id="m-alm">Nenhum alarme ativo.</div>'
+    + '<div class="lv" id="m-live"></div><h3 style="margin:14px 0 4px">Registro de eventos</h3><div class="res lg" id="m-log">Sem eventos.</div><div class="cta2"><button class="mini" type="button" id="m-evcsv">Exportar eventos (CSV)</button></div></details>';
+    renderTagList(); renderLiveShell(); calcSc(); renderAlarms();
+  }
+
+  var psc = $("pane-scada");
+  psc.addEventListener("input", function(e){
+    var t = e.target, i = t.getAttribute("data-ti");
+    if(i !== null){ tags[Number(i)][t.getAttribute("data-tf")] = t.value; saveTags(); }
+    calcSc();
+  });
+  psc.addEventListener("change", function(e){
+    var t = e.target;
+    calcSc();
+    if(t.id === "tg-file"){
+      var f = t.files[0]; if(!f) return;
+      var rd = new FileReader();
+      rd.onload = function(){ var n = importCsv(String(rd.result)); renderTagList(); renderLiveShell(); $("tg-msg").textContent = n ? n + " tags importadas." : "Não encontrei tags no arquivo."; };
+      rd.readAsText(f); t.value = ""; return;
+    }
+    if(t.id === "m-cmd"){
+      if(t.checked && !window.confirm("Habilitar o envio de comandos por esta tela? Use só para testes. Intertravamentos e segurança devem estar no CLP.")){ t.checked = false; return; }
+      cmdOn = t.checked; renderLiveShell(); return;
+    }
+    if(t.getAttribute("data-ti") !== null){ renderLiveShell(); if(mq && mq.connected && topics().length) mq.subscribe(topics()); }
+  });
+  psc.addEventListener("click", function(e){
+    var b = e.target.closest("button"); if(!b) return;
+    var id = b.id, d = b.getAttribute("data-tdel"), c = b.getAttribute("data-cmd");
+    if(d !== null){ tags.splice(Number(d), 1); saveTags(); renderTagList(); renderLiveShell(); }
+    else if(c !== null) sendCmd(Number(c));
+    else if(id === "tg-add"){ tags.push({t:"NOVA_TAG", d:"", k:"AI", a:"", u:"", mn:"0", mx:"100", al:"", ah:"", tp:""}); saveTags(); renderTagList(); renderLiveShell(); }
+    else if(id === "tg-exp") download("tags-clp.csv", tagsCsv());
+    else if(id === "tg-imp") $("tg-file").click();
+    else if(id === "m-go") mqttConnect();
+    else if(id === "m-stop"){ stopDemo(); mqttDisconnect(); }
+    else if(id === "m-demo"){ if(demo){ stopDemo(); $("m-st").textContent = "Desconectado."; } else startDemo(); }
+    else if(id === "m-evcsv") download("eventos-supervisorio.csv", ["data_hora;origem;mensagem"].concat(evlog.map(function(x){ return [x.t.toLocaleString("pt-BR"), csvCell(x.s), csvCell(x.m)].join(";"); })).join("\r\n"));
+  });
+  $("dlg-admin").addEventListener("close", function(){ stopDemo(); mqttDisconnect(true); });
+  setInterval(function(){ tags.forEach(function(t,i){ updateCard(i); }); }, 5000);
+  renderScada();
+
+  body.addEventListener("input", edit);
+  body.addEventListener("change", function(e){ edit(e); if(e.target.id==="up") upload(e.target.files); });
+  body.addEventListener("click", function(e){
+    var t = e.target.closest("button"); if(!t) return;
+    var d = t.getAttribute("data-del"), a = t.getAttribute("data-add"), i = Number(t.getAttribute("data-i"));
+    if(d){ var rm = draft[d].splice(i,1)[0]; if(d==="photos" && rm && rm.f) gone.push(rm.f); renderAdmin(); }
+    else if(a){ draft[a].push(a==="kit_items" ? {e:"🔧", n:"Novo item", p:0, on:false} : {id:"", title:"Novo vídeo", text:""}); renderAdmin(); }
+  });
+  $("ad-save").addEventListener("click", async function(){
+    var m = $("ad-msg"); m.textContent = "Salvando…";
+    draft.videos.forEach(function(v){ v.id = ytId(v.id); });
+    draft.kit_items = draft.kit_items.filter(function(it){ return String(it.n).trim(); });
+    var r = await sb.from("site_content").upsert(["kit_items","videos","photos"].map(function(k){ return {key:k, value:draft[k]}; }));
+    if(r.error){ m.textContent = "Não consegui salvar: " + r.error.message; return; }
+    if(gone.length){ try{ await sb.storage.from("fotos").remove(gone); }catch(x){} gone = []; }
+    data = clone(draft); renderAll(); renderAdmin();
+    m.textContent = "Salvo! O site já está atualizado.";
+  });
+})();
+</script>
+
+<script>
+/* Pachequinho · assistente IA da MKP Engenharia.
+   A IA roda numa Supabase Edge Function (chave e prompt ficam no servidor, nunca no navegador). */
+(function(){
+  var ENDPOINT = "https://drefmtvllekfytxwsqir.supabase.co/functions/v1/pachequinho";
+  var ANON = "sb_publishable_5OMo-c_-Yf_968rXl_j4Yg_C0RYJUda";
+  var WA = "5541984374840";
+  function $(i){ return document.getElementById(i); }
+  function wa(t){ return "https://wa.me/" + WA + "?text=" + encodeURIComponent(t); }
+  var bubble=$("asst-bubble"), wrap=$("asst-bubble-wrap"), panel=$("asst-panel"), msgs=$("asst-messages"),
+      opts=$("asst-options"), input=$("asst-input"), sendBtn=$("asst-send"), tip=$("asst-tooltip");
+  var history=[], busy=false, opened=false, token=null, sbx=window.__mkpSb;
+
+  // Acesso restrito: o Pachequinho só aparece (e só responde) com administrador logado.
+  function setAccess(session){
+    token = session && session.access_token ? session.access_token : null;
+    wrap.hidden = !token;
+    if(!token){ toggle(false); msgs.innerHTML=""; opts.innerHTML=""; history=[]; tip.classList.remove("show"); }
+  }
+  if(sbx){
+    sbx.auth.onAuthStateChange(function(_e,session){ setAccess(session); });
+    sbx.auth.getSession().then(function(r){ setAccess(r.data && r.data.session); });
+  }
+
+  function fmt(s){
+    s = String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});
+    s = s.replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>").replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');
+    return s.replace(/\n/g,"<br>");
+  }
+  function add(cls, html){ var d=document.createElement("div"); d.className="asst-msg "+cls; d.innerHTML=html; msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight; return d; }
+  function setOpts(list){
+    opts.innerHTML="";
+    list.forEach(function(o){
+      var b=document.createElement("button"); b.type="button"; b.className="asst-opt-btn"; b.textContent=o.t;
+      b.onclick=function(){ if(o.href){ window.open(o.href,"_blank","noopener"); } else { ask(o.t); } };
+      opts.appendChild(b);
+    });
+  }
+  function kitContext(){
+    var rows=[].slice.call(document.querySelectorAll(".kit label")).map(function(l){
+      var n=l.querySelector(".n"), p=l.querySelector(".p"); return n&&p ? "- "+n.textContent.trim()+": "+p.textContent.trim() : "";
+    }).filter(Boolean);
+    return rows.length ? "Itens do kit de automação exibidos no site agora:\n"+rows.join("\n") : "";
+  }
+  var OK_HOST=/(^|\.)(amazon\.com\.br|amzn\.to|mercadolivre\.com\.br|mercadolibre\.com|mercadolivre\.com|vertexaisearch\.cloud\.google\.com)$/i;
+  function safeUrl(u){ try{ var x=new URL(u); return x.protocol==="https:" && OK_HOST.test(x.hostname) ? x.href : ""; }catch(e){ return ""; } }
+  function safeImg(u){ try{ var x=new URL(u); return x.protocol==="https:" ? x.href : ""; }catch(e){ return ""; } }
+  function el(tag, cls, txt){ var n=document.createElement(tag); if(cls) n.className=cls; if(txt!=null) n.textContent=txt; return n; }
+  function link(href, txt, cls){ var u=safeUrl(href); if(!u) return null; var a=el("a",cls||"",txt); a.href=u; a.target="_blank"; a.rel="noopener noreferrer sponsored"; return a; }
+  function money(n){ return "R$ "+Number(n).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function quoteText(d){
+    var L=["Cotação MKP Engenharia · "+new Date(d.consultadoEm||Date.now()).toLocaleString("pt-BR")];
+    (d.quotes||[]).forEach(function(q){
+      L.push("", q.quantidade+"x "+q.item);
+      (q.ofertas||[]).forEach(function(o){ L.push(" - "+o.loja+": "+o.precoTexto+" · "+String(o.titulo).slice(0,70)+" · "+o.url); });
+      if(!(q.ofertas||[]).length) L.push(" - sem oferta confirmada; busca: "+q.links.mercadolivre+" | "+q.links.amazon);
+    });
+    if(d.total) L.push("", "Total (menor preço de cada item): "+d.total.texto);
+    L.push("Preços de referência; confirme na página da loja.");
+    return L.join("\n");
+  }
+  function copyText(t, btn){
+    var done=function(){ var o=btn.textContent; btn.textContent="Copiado ✓"; setTimeout(function(){btn.textContent=o;},1800); };
+    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(done,function(){ fb(); }); } else fb();
+    function fb(){ var ta=el("textarea"); ta.value=t; ta.style.cssText="position:fixed;opacity:0"; document.body.appendChild(ta); ta.select(); try{ document.execCommand("copy"); done(); }catch(e){} ta.remove(); }
+  }
+  function renderQuotes(d){
+    var box=el("div","asst-msg bot asst-quote"), affiliate=false;
+    d.quotes.forEach(function(q){
+      var wrapI=el("div","asst-q-item"), h=el("div","asst-q-head", q.quantidade+"× "+q.item);
+      wrapI.appendChild(h);
+      var best=q.menorPreco && q.menorPreco.url;
+      (q.ofertas||[]).forEach(function(o){
+        var row=el("div","asst-offer"+(o.url===best?" best":"")), th=el("div","th"), im=safeImg(o.imagem);
+        if(im){ var i=el("img"); i.src=im; i.alt=""; i.loading="lazy"; i.referrerPolicy="no-referrer"; th.appendChild(i); } else th.textContent=o.loja==="Amazon"?"📦":"🛒";
+        var mid=el("div"), tt=el("div","tt",o.titulo), mt=el("div","mt"), b=el("b",null,o.loja);
+        mt.appendChild(b); if(o.extra) mt.appendChild(document.createTextNode(" · "+o.extra));
+        mid.appendChild(tt); mid.appendChild(mt);
+        var pr=el("div","pr",o.precoTexto); if(o.url===best && (q.ofertas||[]).length>1) pr.appendChild(el("span","asst-tag","menor"));
+        var a=link(o.url,"Ver na loja ↗"); if(a) pr.appendChild(a);
+        if(/amazon/i.test(o.url) && /[?&]tag=/.test(o.url)) affiliate=true;
+        row.appendChild(th); row.appendChild(mid); row.appendChild(pr); wrapI.appendChild(row);
+      });
+      if(q.estimativa){
+        var est=el("div","asst-q-est","Sem preço confirmado pela API de uma das lojas — valores aproximados de pesquisa web. Confirme no link.");
+        (q.estimativa.fontes||[]).slice(0,3).forEach(function(f){ var a=link(f.url,f.titulo||"fonte"); if(a){ est.appendChild(document.createTextNode(" ")); est.appendChild(a); } });
+        wrapI.appendChild(est);
+      }
+      var lk=el("div","asst-q-links","Buscar: "), a1=link(q.links.mercadolivre,"Mercado Livre ↗"), a2=link(q.links.amazon,"Amazon ↗");
+      if(a1) lk.appendChild(a1); if(a1&&a2) lk.appendChild(document.createTextNode(" · ")); if(a2) lk.appendChild(a2);
+      wrapI.appendChild(lk); box.appendChild(wrapI);
+    });
+    if(d.total){
+      var t=el("div","asst-q-total","Total estimado: "+d.total.texto), sm=el("small",null,"menor preço encontrado de cada item"+(d.total.completo?"":" (alguns itens sem preço)")+" · confira se a especificação é a mesma");
+      t.appendChild(sm); box.appendChild(t);
+    }
+    var cp=el("button","asst-opt-btn asst-q-copy","Copiar lista"); cp.type="button";
+    cp.addEventListener("click",function(){ copyText(quoteText(d),cp); }); box.appendChild(cp);
+    var when=d.consultadoEm?new Date(d.consultadoEm).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}):"";
+    box.appendChild(el("div","asst-q-note","Preços de referência consultados em "+when+"; podem mudar. Confirme na página da loja antes de comprar."+(affiliate?" Como Associado da Amazon, a MKP ganha com compras qualificadas.":"")));
+    msgs.appendChild(box); msgs.scrollTop=msgs.scrollHeight;
+  }
+  function quoteMemo(d){
+    return (d.quotes||[]).map(function(q){ return q.item+" ×"+q.quantidade+" → "+(q.menorPreco?"menor "+q.menorPreco.loja+" "+q.menorPreco.precoTexto:"sem preço confirmado"); }).join("; ");
+  }
+  function greet(){
+    var h=new Date().getHours(), g=h<12?"Bom dia":h<18?"Boa tarde":"Boa noite";
+    add("bot", g+"! Sou o <strong>Pachequinho</strong>, assistente de engenharia elétrica da MKP. ⚡<br>Tiro dúvidas de instalação (NBR 5410, cabos, disjuntores, DR/DPS), ajudo com automação e <strong>cotação de materiais na Amazon e no Mercado Livre</strong>.");
+    setOpts([{t:"Cotar material elétrico"},{t:"Qual cabo e disjuntor usar?"},{t:"Quanto custa automatizar?"},{t:"Quero um orçamento", href:wa("Olá! Vim pelo site e quero um orçamento.")}]);
+  }
+  function toggle(force){
+    opened = typeof force==="boolean" ? force : !opened;
+    panel.classList.toggle("open",opened);
+    tip.classList.remove("show");
+    if(opened){ if(!msgs.children.length) greet(); setTimeout(function(){input.focus();},50); }
+    bubble.classList.remove("asst-open-pop"); void bubble.offsetWidth; bubble.classList.add("asst-open-pop");
+  }
+  async function ask(text){
+    text=String(text||"").trim(); if(!text||busy) return;
+    if(sbx){ try{ var ss=await sbx.auth.getSession(); setAccess(ss.data&&ss.data.session); }catch(e){ setAccess(null); } }
+    if(!token) return;
+    busy=true; sendBtn.disabled=true; opts.innerHTML=""; input.value="";
+    add("user", fmt(text)); history.push({role:"user",text:text});
+    var typing=add("bot asst-typing","<span></span><span></span><span></span>");
+    var reply="", ok=false, data=null, code=0;
+    if(/cot|pre[çc]o|quanto custa|quanto (est[áa]|fica)|valor|or[çc]ar|lista de material|comprar/i.test(text)){ var sm=document.createElement("small"); sm.textContent="consultando Amazon e Mercado Livre…"; typing.appendChild(sm); }
+    try{
+      var ctl=new AbortController(), to=setTimeout(function(){ctl.abort();},70000);
+      var r=await fetch(ENDPOINT,{method:"POST",signal:ctl.signal,
+        headers:{"Content-Type":"application/json","apikey":ANON,"Authorization":"Bearer "+token},
+        body:JSON.stringify({messages:history.slice(-12),context:kitContext()})});
+      clearTimeout(to);
+      code=r.status; if(r.status===401||r.status===403){ setAccess(null); } if(r.ok){ var d=await r.json(); data=d; reply=(d.reply||"").trim(); ok=!!reply || !!(d.quotes&&d.quotes.length); }
+    }catch(e){}
+    typing.remove();
+    if(ok){
+      var hasQ=data&&data.quotes&&data.quotes.length;
+      history.push({role:"model",text:reply+(hasQ?"\n[dados da cotação mostrada ao usuário: "+quoteMemo(data)+"]":"")});
+      if(reply) add("bot",fmt(reply));
+      if(hasQ) renderQuotes(data);
+    }
+    else{
+      history.pop();
+      add("bot", code===401 ? "Sua sessão expirou. Entre de novo na Área do administrador para usar o Pachequinho." : code===429 ? "Opa, muitas perguntas seguidas! ⏳ Espere alguns minutinhos e tente de novo, ou chame a MKP no WhatsApp." : "Não consegui responder agora. 😕 Você pode falar direto com a MKP pelo WhatsApp, que respondemos rapidinho.");
+      setOpts([{t:"Falar no WhatsApp", href:wa("Olá! Vim pelo site e tenho uma dúvida.")}]);
+    }
+    busy=false; sendBtn.disabled=false; input.focus();
+  }
+  bubble.addEventListener("click",function(){toggle();});
+  $("asst-close").addEventListener("click",function(){toggle(false);});
+  tip.addEventListener("click",function(){toggle(true);});
+  sendBtn.addEventListener("click",function(){ask(input.value);});
+  input.addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); ask(input.value); } });
+
+  // "Vida": dica flutuante uma vez por sessão e aceno ocasional enquanto o chat está fechado
+  var seen=false; try{ seen=sessionStorage.getItem("pq-tip")==="1"; }catch(e){}
+  if(!seen) setTimeout(function(){
+    if(opened||!token) return;
+    tip.textContent="Oi! Sou o Pachequinho ⚡ Dúvida elétrica ou cotação de material? Eu ajudo.";
+    tip.classList.add("show"); wrap.classList.add("notify");
+    try{ sessionStorage.setItem("pq-tip","1"); }catch(e){}
+    setTimeout(function(){ tip.classList.remove("show"); wrap.classList.remove("notify"); },9000);
+  },7000);
+  setInterval(function(){
+    if(opened||document.hidden||!token) return;
+    bubble.classList.remove("asst-wiggle"); void bubble.offsetWidth; bubble.classList.add("asst-wiggle");
+  },30000);
+})();
+</script>
+</body>
+</html>
